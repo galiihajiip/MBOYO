@@ -1,0 +1,27 @@
+{
+  "name": "@mboyo/api-client",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "lint": "eslint . --max-warnings 0",
+    "typecheck": "tsc --noEmit",
+    "test": "echo \"no tests yet\" && exit 0"
+  },
+  "dependencies": {
+    "@mboyo/domain": "workspace:*",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@mboyo/config-eslint": "workspace:*",
+    "@mboyo/config-typescript": "workspace:*",
+    "@types/node": "^22.7.5",
+    "eslint": "^9.13.0",
+    "typescript": "^5.6.3"
+  }
+}
