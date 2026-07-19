@@ -1,0 +1,9 @@
+{
+  "extends": "@mboyo/config-typescript/nextjs.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "noEmit": false
+  },
+  "include": ["src"]
+}
