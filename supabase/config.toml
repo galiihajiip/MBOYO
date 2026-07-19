@@ -1,0 +1,81 @@
+# MBOYO local Supabase platform configuration.
+#
+# Configures the services this project actually uses per docs/adr/0002-supabase-platform.md:
+# Auth, Postgres+PostGIS, Storage (two private buckets), Realtime. No schema
+# is defined here — see docs/product/DOMAIN_MODEL.md and docs/product/RBAC_MATRIX.md
+# for the schema/RLS design that a later block implements as migrations in
+# supabase/migrations/.
+#
+# Run with: pnpm db:start (wraps `supabase start`), requires Docker Desktop running.
+
+project_id = "mboyo"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "storage", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+shadow_port = 54320
+major_version = 17
+
+[db.pooler]
+enabled = false
+
+# PostGIS and other extensions needed for geospatial report/geofence data
+# (docs/product/DOMAIN_MODEL.md disaster_event.geofence, geolocation_observation)
+# are enabled via a migration (see supabase/migrations/) rather than here —
+# config.toml's [db] section does not itself enable extensions; the
+# `postgis` extension ships in the local Postgres image and is turned on
+# with `CREATE EXTENSION IF NOT EXISTS postgis;` in the first migration.
+
+[realtime]
+enabled = true
+
+[studio]
+enabled = true
+port = 54323
+
+[local_smtp]
+enabled = true
+port = 54324
+
+[storage]
+enabled = true
+file_size_limit = "25MiB"
+
+# Private evidence bucket — report photos. Never public, per AGENTS.md
+# secrets/security rules and docs/security/THREAT_MODEL.md threat #9
+# (sensitive imagery). Access is via signed URLs issued server-side only.
+[storage.buckets.report-evidence]
+public = false
+file_size_limit = "25MiB"
+allowed_mime_types = ["image/jpeg", "image/png", "image/webp", "image/heic"]
+
+# Private exports bucket — Coordinator/Auditor-generated CSV/GeoJSON exports
+# (docs/product/DOMAIN_MODEL.md export_job). Never public.
+[storage.buckets.generated-exports]
+public = false
+file_size_limit = "25MiB"
+allowed_mime_types = ["text/csv", "application/geo+json", "application/json"]
+
+[auth]
+enabled = true
+site_url = "http://localhost:3000"
+additional_redirect_urls = ["http://localhost:3000"]
+jwt_expiry = 3600
+enable_signup = true
+
+[auth.email]
+enable_signup = true
+double_confirm_changes = false
+enable_confirmations = false
+
+[edge_runtime]
+enabled = false
+
+[analytics]
+enabled = false
