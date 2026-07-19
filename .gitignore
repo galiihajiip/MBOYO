@@ -1,0 +1,65 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Next.js
+.next/
+out/
+
+# Turborepo
+.turbo/
+
+# Build outputs
+dist/
+build/
+
+# Generated service worker (built by apps/web/scripts/build-sw.ts after
+# `next build` — public/sw.js is an artifact, not source; sw-src.ts under
+# apps/web/src/service-worker/ is the real source, tracked normally)
+apps/web/.sw-build/
+apps/web/public/sw.js
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+
+# ML artifacts (large binaries never committed; see ml/models/.gitkeep policy)
+ml/data/raw/*
+ml/data/interim/*
+ml/data/processed/*
+!ml/data/raw/.gitkeep
+!ml/data/interim/.gitkeep
+!ml/data/processed/.gitkeep
+ml/models/*.onnx
+ml/models/*.pt
+ml/models/*.pth
+ml/models/*_metadata.json
+ml/models/*_gradcam_samples/
+
+# Supabase local
+supabase/.branches/
+supabase/.temp/
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Editor/OS
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+*.swp
+
+# Test artifacts
+coverage/
+playwright-report/
+test-results/

@@ -1,0 +1,49 @@
+{
+  "name": "mboyo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "MBOYO — offline-first disaster reporting, verification, and response coordination platform.",
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "packageManager": "pnpm@10.32.1",
+  "scripts": {
+    "dev": "turbo run dev --parallel",
+    "dev:web": "turbo run dev --filter=@mboyo/web",
+    "dev:ml": "python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000 --app-dir apps/ml-api",
+    "dev:worker": "cd apps/worker && python -m worker.main",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "test:e2e": "turbo run test:e2e --filter=@mboyo/web",
+    "build": "turbo run build",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,yml,yaml}\" --ignore-path .gitignore",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,yml,yaml}\" --ignore-path .gitignore",
+    "db:start": "supabase start",
+    "db:stop": "supabase stop",
+    "db:reset": "supabase db reset",
+    "db:types": "supabase gen types typescript --local > packages/domain/src/supabase-types.generated.ts",
+    "ml:prepare": "python ml/src/prepare_data.py",
+    "ml:deduplicate": "python ml/src/deduplicate.py",
+    "ml:audit": "python ml/src/audit.py",
+    "ml:split": "python ml/src/split.py",
+    "ml:benchmark": "python ml/src/run_benchmark.py",
+    "ml:benchmark:smoke-test": "python ml/src/run_benchmark.py --smoke-test",
+    "ml:train": "python ml/src/train.py",
+    "ml:evaluate": "python ml/src/run_evaluate.py",
+    "ml:evaluate:smoke-test": "python ml/src/run_evaluate.py --smoke-test",
+    "ml:export": "python ml/src/run_export.py",
+    "ml:export:smoke-test": "python ml/src/run_export.py --smoke-test",
+    "ml:test": "cd ml && python -m pytest tests/",
+    "ml:lint": "cd ml && python -m ruff check .",
+    "ml:typecheck": "cd ml && python -m mypy src/ tests/"
+  },
+  "devDependencies": {
+    "prettier": "^3.3.3",
+    "sharp": "^0.35.3",
+    "supabase": "^2.109.1",
+    "turbo": "^2.1.3",
+    "typescript": "^5.6.3"
+  }
+}

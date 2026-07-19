@@ -1,0 +1,35 @@
+# MBOYO local development Docker Compose skeleton.
+#
+# Runs apps/ml-api and apps/worker in containers for local development
+# against a Supabase project (local via `pnpm db:start` or hosted).
+# apps/web is intentionally NOT containerized here — it runs via `pnpm dev:web`
+# for the fastest Next.js dev-server feedback loop; only ml-api/worker
+# benefit from container parity with their eventual deployment target.
+#
+# Per docs/architecture/DEPLOYMENT_TOPOLOGY.md, ml-api and worker have no
+# public ingress — neither service here is exposed beyond localhost.
+
+services:
+  ml-api:
+    build:
+      context: .
+      dockerfile: apps/ml-api/Dockerfile
+    env_file:
+      - .env
+    ports:
+      - "127.0.0.1:8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  worker:
+    build:
+      context: .
+      dockerfile: apps/worker/Dockerfile
+    env_file:
+      - .env
+    depends_on:
+      - ml-api
+    restart: unless-stopped
