@@ -1,0 +1,92 @@
+@import "tailwindcss";
+
+/**
+ * MBOYO design-system theme. Maps docs/design/DESIGN_SYSTEM_SPEC.md tokens
+ * into Tailwind v4's @theme layer so `bg-brand-critical-red`,
+ * `text-severity-destroyed`, etc. are available as utilities without any
+ * component ever hardcoding a hex value.
+ */
+@theme {
+  --font-sans: var(--font-plus-jakarta-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-ibm-plex-mono), ui-monospace, monospace;
+
+  /* Brand tokens (docs/design/DESIGN_SYSTEM_SPEC.md "Colors" / AGENTS.md) */
+  --color-brand-ink-navy: #082032;
+  --color-brand-deep-ocean: #0b3a53;
+  --color-brand-signal-cyan: #18b6c9;
+  --color-brand-relief-teal: #1f9d8b;
+  --color-brand-safe-green: #2ead68;
+  --color-brand-caution-amber: #f6b73c;
+  --color-brand-priority-orange: #f47a38;
+  --color-brand-critical-red: #d83a3a;
+  --color-brand-cloud-white: #f7fafc;
+  --color-brand-mist: #e8f0f4;
+  --color-brand-slate: #334155;
+  --color-brand-muted: #64748b;
+  --color-brand-night: #06141f;
+  --color-brand-border: #d7e3e9;
+
+  /* Severity semantic tokens */
+  --color-severity-unknown: var(--color-brand-muted);
+  --color-severity-no-damage: var(--color-brand-safe-green);
+  --color-severity-minor-damage: var(--color-brand-caution-amber);
+  --color-severity-major-damage: var(--color-brand-priority-orange);
+  --color-severity-destroyed: var(--color-brand-critical-red);
+
+  /* Priority semantic tokens */
+  --color-priority-unassigned: var(--color-brand-muted);
+  --color-priority-low: var(--color-brand-safe-green);
+  --color-priority-medium: var(--color-brand-caution-amber);
+  --color-priority-high: var(--color-brand-priority-orange);
+  --color-priority-critical: var(--color-brand-critical-red);
+
+  /* Surface/container tokens (DESIGN_SYSTEM_SPEC.md front matter) */
+  --color-surface: #f8f9ff;
+  --color-surface-dim: #ccdbf4;
+  --color-surface-bright: #f8f9ff;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #eff4ff;
+  --color-surface-container: #e6eeff;
+  --color-surface-container-high: #dde9ff;
+  --color-surface-container-highest: #d5e3fd;
+  --color-on-surface: #0d1c2f;
+  --color-on-surface-variant: #43474c;
+  --color-outline: #73777d;
+  --color-outline-variant: #c3c7cd;
+
+  /* Radii (docs/design/DESIGN_SYSTEM_SPEC.md "Shapes") */
+  --radius-sm: 0.25rem;
+  --radius-DEFAULT: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-full: 9999px;
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  /* Visible, high-contrast focus ring on every interactive element —
+     never rely on browser default outline alone, and never remove it
+     without replacing it. */
+  :focus-visible {
+    outline: 2px solid var(--color-brand-signal-cyan);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+
+  /* Reduced-motion support: every animation/transition in this design
+     system must be neutralized here, not opted out of ad hoc per component. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
