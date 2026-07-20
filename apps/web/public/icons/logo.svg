@@ -1,0 +1,7 @@
+<svg width="160" height="160" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Logo MBOYO">
+  <rect width="160" height="160" rx="32" fill="#082032"/>
+  <path d="M80 30C58.5 30 41 47.5 41 69C41 98 80 132 80 132C80 132 119 98 119 69C119 47.5 101.5 30 80 30Z" fill="#F7FAFC"/>
+  <circle cx="80" cy="69" r="16" fill="#082032"/>
+  <path d="M56 52C60 44 69 38 80 38" stroke="#18B6C9" stroke-width="6" stroke-linecap="round"/>
+  <path d="M46 60C51 44 64 32 80 30" stroke="#18B6C9" stroke-width="6" stroke-linecap="round" opacity="0.55"/>
+</svg>
