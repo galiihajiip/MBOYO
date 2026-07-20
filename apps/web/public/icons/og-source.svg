@@ -1,0 +1,27 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" fill="#082032"/>
+  <rect width="1200" height="630" fill="url(#grad)" opacity="0.5"/>
+  <defs>
+    <radialGradient id="grad" cx="80%" cy="10%" r="80%">
+      <stop offset="0%" stop-color="#0B3A53"/>
+      <stop offset="100%" stop-color="#082032" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <g transform="translate(90,175)">
+    <path d="M80 30C58.5 30 41 47.5 41 69C41 98 80 132 80 132C80 132 119 98 119 69C119 47.5 101.5 30 80 30Z" fill="#F7FAFC"/>
+    <circle cx="80" cy="69" r="16" fill="#082032"/>
+    <path d="M56 52C60 44 69 38 80 38" stroke="#18B6C9" stroke-width="6" stroke-linecap="round"/>
+    <path d="M46 60C51 44 64 32 80 30" stroke="#18B6C9" stroke-width="6" stroke-linecap="round" opacity="0.55"/>
+  </g>
+
+  <text x="290" y="290" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="88" font-weight="700" fill="#F7FAFC">MBOYO</text>
+  <text x="290" y="345" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="30" font-weight="400" fill="#E8F0F4">Laporan Tetap Jalan. Respons Lebih Tepat.</text>
+
+  <g transform="translate(290,400)">
+    <rect x="0" y="0" width="14" height="14" rx="7" fill="#2EAD68"/>
+    <rect x="30" y="0" width="14" height="14" rx="7" fill="#F6B73C"/>
+    <rect x="60" y="0" width="14" height="14" rx="7" fill="#F47A38"/>
+    <rect x="90" y="0" width="14" height="14" rx="7" fill="#D83A3A"/>
+  </g>
+</svg>
