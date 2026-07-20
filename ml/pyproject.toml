@@ -1,0 +1,57 @@
+[project]
+name = "mboyo-ml"
+version = "0.1.0"
+description = "MBOYO CV model training/evaluation pipeline — never imported directly by apps/web (AGENTS.md architecture boundary)."
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "torch>=2.4.0",
+    "torchvision>=0.19.0",
+    "opencv-python-headless>=4.10.0",
+    "pillow>=10.4.0",
+    "scikit-learn>=1.5.0",
+    "onnxruntime>=1.19.0",
+    "onnx>=1.16.0",
+    "pyyaml>=6.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "mypy>=1.11.0",
+    "ruff>=0.7.0",
+    "pytest>=8.3.0",
+    "types-PyYAML>=6.0.0",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_unused_ignores = true
+disallow_untyped_defs = true
+mypy_path = "src"
+explicit_package_bases = true
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+markers = [
+    "slow: exercises a real (if tiny) training loop; excluded from the default fast run",
+]
+
+# torch/torchvision/sklearn/onnx ship no py.typed marker / type stubs —
+# their public APIs are still checked via our own call-site type
+# annotations, but mypy cannot verify their internals, so these three are
+# the narrow, explicit exception to "no untyped imports" rather than a
+# blanket relaxation of strict mode.
+[[tool.mypy.overrides]]
+module = ["torchvision.*", "sklearn.*", "onnx.*", "onnxruntime.*"]
+ignore_missing_imports = true
+
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"

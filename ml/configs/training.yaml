@@ -1,0 +1,164 @@
+# MBOYO training/benchmark configuration.
+#
+# Consumed by ml/src/training/config.py — the single source of truth for
+# model architecture candidates, resolutions, augmentation, loss options,
+# and training hyperparameters, so no script hardcodes a value that could
+# drift from what's documented here and in the benchmark report.
+#
+# This file does NOT define dataset composition/split ratios — that
+# remains configs/dataset.yaml's responsibility (BLOCK 18). This file is
+# training/benchmark config only.
+
+experiment_name: mboyo-damage-benchmark-v0
+
+# Which manifest to train/evaluate from — the output of BLOCK 18's
+# split.py pipeline. A relative path from ml/, resolved the same way
+# dataset.yaml's paths are.
+manifest_path: data/manifests/split.csv
+
+# Deterministic seeding — every run (real or smoke-test) sets Python's,
+# NumPy's, and PyTorch's RNGs from this seed before any model
+# initialization or data shuffling, and enables PyTorch's deterministic
+# algorithm mode where available, so a benchmark run with the same config
+# and the same manifest byte-for-byte produces the same result.
+random_seed: 20260719
+
+# Candidate architectures for the fair benchmark — torchvision
+# ImageNet-pretrained backbones, transfer-learned (backbone frozen or
+# fine-tuned per `freeze_backbone` below) with a new classification head
+# sized to len(dataset_config.classes) (5, per BLOCK 18's dataset.yaml).
+architectures:
+  - mobilenet_v3_large
+  - efficientnet_v2_s
+  - convnext_tiny
+
+# Input resolutions benchmarked per architecture, per this block's
+# explicit "benchmark 224/288 inputs" requirement — every architecture is
+# run at both, not just its torchvision-default resolution, so the
+# benchmark result reflects resolution choice as an independent variable.
+resolutions_px:
+  - 224
+  - 288
+
+# ImageNet normalization — required whenever the backbone's pretrained
+# weights were themselves trained under this normalization (true for all
+# three candidate architectures' torchvision IMAGENET1K weights); using
+# any other normalization would silently degrade transfer-learning
+# performance without an obvious error.
+normalization:
+  mean: [0.485, 0.456, 0.406]
+  std: [0.229, 0.224, 0.225]
+
+# Class-imbalance handling candidates — both are benchmarked against a
+# plain (unweighted) cross-entropy baseline per this block's "class
+# weights/focal loss comparison" requirement; the benchmark report
+# states which (if either) improved macro-F1/destroyed-recall enough to
+# justify its added complexity, rather than assuming either helps.
+loss_functions:
+  - cross_entropy
+  - class_weighted_cross_entropy
+  - focal_loss
+
+focal_loss:
+  gamma: 2.0
+
+# A WeightedRandomSampler is a THIRD, distinct way to address class
+# imbalance (oversampling rare classes at the batch level, vs. loss-level
+# reweighting above) — per this block's "sampler only when justified"
+# requirement, it is benchmarked as an explicit on/off variant, never
+# silently enabled by default; the benchmark report must show it produced
+# a genuine improvement before any training config uses it as the default.
+sampler:
+  weighted_random_sampler_candidate: true
+
+augmentation:
+  # Realistic, not aggressive — matches the actual degradations ground-level
+  # citizen photos exhibit (RISK_REGISTER.md risk #4: motion blur, poor
+  # lighting, non-professional framing), not synthetic distortions unlikely
+  # to occur in real submissions.
+  horizontal_flip_probability: 0.5
+  rotation_degrees: 15
+  color_jitter:
+    brightness: 0.3
+    contrast: 0.3
+    saturation: 0.2
+  gaussian_blur_probability: 0.15
+  gaussian_blur_kernel_size: 5
+
+training:
+  batch_size: 32
+  max_epochs: 30
+  learning_rate: 0.0003
+  weight_decay: 0.0001
+  # Backbone starts frozen (only the new classification head trains) for
+  # this many warmup epochs, then unfreezes for full fine-tuning — the
+  # standard transfer-learning two-phase schedule, avoiding catastrophic
+  # forgetting of ImageNet features before the new head has stabilized.
+  frozen_backbone_warmup_epochs: 3
+  # Early stopping is on validation macro-F1 specifically (not validation
+  # loss), per this block's explicit requirement — loss can keep improving
+  # on the majority class while macro-F1 (which weights all 5 classes
+  # equally) plateaus or regresses, and macro-F1 is the metric that
+  # actually matters for the release gate (docs/product/SUCCESS_METRICS.md).
+  early_stopping_patience_epochs: 5
+  early_stopping_min_delta: 0.001
+  # Mixed precision (torch.cuda.amp) is used automatically when a CUDA
+  # device is available and this is true; on a CPU-only run (no CUDA
+  # device — the case for this repository's current environment) it has
+  # no effect, per this block's "mixed precision when available"
+  # requirement being conditional, not unconditional.
+  mixed_precision_when_available: true
+
+# CPU smoke-test mode — a fast, deterministic, CPU-only run over a tiny
+# SYNTHETIC dataset (never real images) that exercises the full
+# train/validate/checkpoint/early-stop loop end to end without requiring
+# real training data or meaningful wall-clock time. Its output is always
+# explicitly labeled is_smoke_test: true in any report it produces —
+# never presented as a real benchmark result, per AGENTS.md's demo-fallback
+# labeling rule applied to this pipeline's own self-tests.
+smoke_test:
+  # 6, not 4: generate_smoke_test_dataset's ~60/20/20 split needs at least
+  # this many images per class for every one of train/val/test to receive
+  # at least one image (4 per class rounds the test split down to zero).
+  synthetic_image_count_per_class: 6
+  image_size_px: 64
+  max_epochs: 2
+  batch_size: 4
+
+calibration:
+  # Number of confidence bins for expected calibration error (ECE) —
+  # 10 is the standard choice in calibration literature (Guo et al. 2017).
+  ece_bins: 10
+
+# Confidence threshold below which SUCCESS_METRICS.md's "abstention rate"
+# metric considers an input unclassified — measured and reported, never
+# used to silently drop a prediction the benchmark should have scored.
+abstention_confidence_threshold: 0.5
+
+robustness:
+  # Synthetic degradations applied to a copy of the validation/test set to
+  # measure "robustness to poor image quality" (this block's explicit
+  # selection criterion) — macro-F1 is recomputed under each degradation
+  # and compared to the clean-image baseline; a large drop is reported,
+  # never hidden or averaged away.
+  degradations:
+    - name: gaussian_blur
+      kernel_size: 9
+    - name: low_light
+      brightness_factor: 0.4
+    - name: jpeg_compression_artifact
+      quality: 30
+
+two_stage_gate:
+  # Optional (per this block's "Optionally benchmark a two-stage
+  # quality/building-relevance gate before classification" requirement) —
+  # a lightweight binary pre-filter (real photo of a building, sufficient
+  # quality to judge damage) run before the 5-class severity classifier.
+  # Disabled by default; enabling requires the same manifest to carry a
+  # binary is_valid_subject label, which does not exist yet (BLOCK 18's
+  # manifest schema has no such column) — this section documents the
+  # planned config shape for when that labeling exists, not a currently
+  # runnable path.
+  enabled: false
+  architecture: mobilenet_v3_large
+  resolution_px: 224

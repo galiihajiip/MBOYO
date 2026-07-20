@@ -1,0 +1,32 @@
+# Release-gate thresholds for promoting a trained model from
+# "advisory-only" to the active serving model, per
+# docs/product/SUCCESS_METRICS.md's Release Gate section, which explicitly
+# defers exact numbers to "the current ml/configs/ release criteria file" —
+# this is that file.
+#
+# IMPORTANT — these thresholds are a documented, defensible STARTING POINT,
+# not empirically derived: no real trained model exists yet (ml/data/raw/
+# is genuinely empty per BLOCK 18/19), so these numbers were not chosen by
+# looking at any real evaluation result. They mirror the same honesty
+# posture as ml/src/training/selection_rule.py's architecture-selection
+# gates (also documented as provisional). Whoever runs the first real
+# evaluation against real data should revisit these explicitly — not
+# silently — once real numbers exist to reason about.
+#
+# All three gates must pass for a model to be promoted (is_active=true in
+# model_registry_entries); failing ANY gate keeps the model advisory-only
+# (model_predictions.is_advisory_only=true), per SUCCESS_METRICS.md's
+# Advisory-Only Fallback section. Gates are never traded off against each
+# other — a very high macro-F1 does not compensate for a failing
+# calibration error, matching selection_rule.py's "hard gates first, never
+# traded off" philosophy.
+
+macro_f1_min: 0.75
+destroyed_recall_min: 0.60
+calibration_error_max: 0.10
+
+# Minimum test-set sample count before a release decision is trusted at
+# all — an evaluation on too few images can pass every numeric gate by
+# chance. Below this, the model is forced advisory-only regardless of its
+# measured metrics, and the reason is recorded explicitly (never silently).
+min_test_set_sample_count: 30

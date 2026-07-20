@@ -1,0 +1,113 @@
+# MBOYO damage-classification dataset configuration.
+#
+# Consumed by ml/src/prepare_data.py, audit.py, split.py, deduplicate.py —
+# this is the single source of truth for class list, split ratios, and
+# quality/dedup thresholds, so those scripts never hardcode a value that
+# could drift from what's documented here and in DATA_CARD.md.
+#
+# This file does NOT define release-gate thresholds (macro-F1, destroyed
+# recall, calibration error) — those are evaluate.py/training concerns per
+# docs/product/SUCCESS_METRICS.md's release gate, deferred to a future
+# ml/configs/release_criteria.yaml once real training data and a trained
+# candidate exist. This file is dataset/split/quality config only.
+
+dataset_name: mboyo-damage-severity-v0
+# Bumped whenever the class list, source list, or split methodology
+# changes in a way that would make an old manifest/report non-comparable
+# to a new one — see DATA_CARD.md "Maintenance".
+schema_version: 1
+
+# Exact order and values match packages/domain/src/enums.ts SEVERITY_CLASSES
+# and docs/product/DOMAIN_MODEL.md — do not add, remove, reorder, or rename
+# without updating both.
+classes:
+  - no_damage
+  - minor_damage
+  - major_damage
+  - destroyed
+  - unknown
+
+# Ground-level (citizen phone photo) vs. satellite/aerial imagery — see
+# DATA_CARD.md section 1.1. Every manifest row must carry one of these
+# values; a source not clearly one or the other is not eligible for
+# inclusion until this is resolved (see SOURCES.md).
+image_domains:
+  - ground_level
+  - satellite_aerial
+
+paths:
+  raw: data/raw
+  interim: data/interim
+  processed: data/processed
+  manifests: data/manifests
+  reports: reports
+
+split:
+  # Fractions must sum to 1.0 — split.py validates this and refuses to run
+  # otherwise rather than silently normalizing a typo'd config.
+  train: 0.7
+  val: 0.15
+  test: 0.15
+  # Splitting is source-aware AND geography-aware: every image from the
+  # same (source, geographic_group) pair is assigned to exactly one split,
+  # never spread across splits — an image from the same disaster event/
+  # location appearing in both train and test would leak information the
+  # model shouldn't have (near-identical scenes, same lighting/background)
+  # and would silently inflate a reported metric. See split.py's grouping
+  # key derivation.
+  group_by:
+    - source_id
+    - geographic_group
+  # Deterministic — the same input manifest + this seed always produces
+  # the same split assignment, so a split can be reproduced/audited later
+  # without re-running an actual randomized process. Reported alongside the
+  # split's manifest hash (see split.py output) so "which split was this
+  # model trained on" is always answerable exactly.
+  random_seed: 20260718
+
+quality:
+  # Below this on either axis, an image is excluded as too low-resolution
+  # to be useful signal — flagged, not silently dropped (see
+  # audit.py's excluded_low_resolution report section).
+  min_width_px: 200
+  min_height_px: 200
+  # Images above this file size are flagged for manual review (unusually
+  # large — could be a non-photo file misnamed with an image extension,
+  # or a legitimate high-res capture) rather than auto-processed.
+  max_file_size_mb: 25
+
+deduplicate:
+  # Exact duplicates: identical SHA-256 of file bytes — dropped
+  # automatically (byte-identical files carry zero additional signal).
+  exact_hash_algorithm: sha256
+  # Near-duplicates: average-hash (aHash) Hamming distance at or below
+  # this threshold is flagged as a near-duplicate CANDIDATE — never
+  # auto-dropped, since two genuinely different photos of adjacent
+  # buildings in the same damage state can hash similarly. See
+  # deduplicate.py's --near-duplicate-report, which is advisory, matching
+  # this block's "duplicate/near-duplicate detection" requirement as a
+  # detection-and-report step, not an automatic deletion step.
+  perceptual_hash_size: 8
+  near_duplicate_hamming_threshold: 4
+
+privacy:
+  # See ETHICS_AND_PRIVACY.md section 3. These flags are set by audit.py's
+  # privacy pass (manual review by default; --privacy-scan enables an
+  # optional automated candidate-flagging assist, itself never a final
+  # decision per ETHICS_AND_PRIVACY.md section 3.3).
+  flags:
+    - identifiable_face
+    - legible_identity_document
+    - deceased_person
+  # Flagged rows are excluded from any split by default — split.py must
+  # be given an explicit, per-row override (never a blanket config flip)
+  # to include a privacy-flagged image.
+  exclude_flagged_from_split_by_default: true
+
+licensing:
+  # prepare_data.py refuses to ingest any raw-data subdirectory whose
+  # source_id is not listed in data/manifests/SOURCES.md with a non-empty
+  # license field — see ETHICS_AND_PRIVACY.md section 1. This is not a
+  # toggle a config value can disable; it is enforced in code.
+  require_recorded_license: true
+  unclear_license_treated_as: excluded
