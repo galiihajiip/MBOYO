@@ -63,6 +63,7 @@ export const ROLE_NAV_ITEMS: Record<Role, NavItem[]> = {
     { label: "Peta Bukti", href: "/verifier/peta", icon: "map" },
     { label: "Semua Laporan", href: "/verifier/laporan", icon: "list" },
     { label: "Permintaan Informasi", href: "/verifier/permintaan-informasi", icon: "info-request" },
+    { label: "Analitik", href: "/verifier/analitik", icon: "analytics" },
     { label: "Notifikasi", href: "/verifier/notifikasi", icon: "bell" },
     { label: "Profil", href: "/verifier/profil", icon: "user" },
   ],
