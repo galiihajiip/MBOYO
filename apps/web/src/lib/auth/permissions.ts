@@ -69,11 +69,62 @@ const PERMISSION_TABLE: Record<string, Partial<Record<Role, boolean>>> = {
   // role_assignment / system_setting / disaster_event / organization:
   // System Administrator configuration domain, exclusively.
   "role_assignment:create": { system_administrator: true },
+  "role_assignment:read": { system_administrator: true, auditor: true },
   "role_assignment:update": { system_administrator: true },
   "role_assignment:delete": { system_administrator: true },
   "system_setting:configure": { system_administrator: true },
+  "system_setting:read": {
+    reporter: true,
+    verifier: true,
+    response_coordinator: true,
+    system_administrator: true,
+    auditor: true,
+  },
+  "disaster_event:create": { system_administrator: true },
+  "disaster_event:update": { system_administrator: true },
   "disaster_event:configure": { system_administrator: true },
+  "disaster_event:read": {
+    reporter: true,
+    verifier: true,
+    response_coordinator: true,
+    system_administrator: true,
+    auditor: true,
+  },
   "organization:configure": { system_administrator: true },
+
+  // profile (BLOCK 27): every role reads/updates their own (RLS-scoped —
+  // profiles_select_own/profiles_update_own already enforce "own row
+  // only"); System Administrator gets full C/R/U/D/Co per RBAC_MATRIX.md
+  // (the "Pengguna & Role" screen's user-management surface); Auditor R
+  // (read-only oversight of the user roster, never mutation).
+  "profile:read": {
+    reporter: true,
+    verifier: true,
+    response_coordinator: true,
+    system_administrator: true,
+    auditor: true,
+  },
+  "profile:update": { reporter: true, verifier: true, response_coordinator: true, system_administrator: true },
+  "profile:configure": { system_administrator: true },
+
+  // deletion_request / legal_hold (BLOCK 27 retention placeholders): any
+  // authenticated role may submit their own deletion request (C, own);
+  // System Administrator reviews (U) and places/releases legal holds
+  // (C/U); Auditor gets read-only visibility into both, matching its
+  // read-only-everywhere posture and this block's "retention/deletion
+  // evidence" requirement.
+  "deletion_request:create": {
+    reporter: true,
+    verifier: true,
+    response_coordinator: true,
+    system_administrator: true,
+    auditor: true,
+  },
+  "deletion_request:read": { system_administrator: true, auditor: true },
+  "deletion_request:update": { system_administrator: true },
+  "legal_hold:create": { system_administrator: true },
+  "legal_hold:update": { system_administrator: true },
+  "legal_hold:read": { system_administrator: true, auditor: true },
 
   // model_registry_entry: System Administrator A(promote) only.
   "model_registry_entry:approve": { system_administrator: true },
@@ -85,6 +136,18 @@ const PERMISSION_TABLE: Record<string, Partial<Record<Role, boolean>>> = {
   // entirely (requirePermission for "audit_event:update"/"delete" will
   // therefore always deny, for every role, since no entry grants it).
   "audit_event:read": { system_administrator: true, auditor: true },
+
+  // notification (BLOCK 25): every operational role reads only their own
+  // (enforced by notifications_select_own RLS — this permission entry is
+  // the route-layer gate, RLS is still the actual row-visibility boundary);
+  // System Administrator gets R(all) per RBAC_MATRIX.md; Auditor R(all).
+  "notification:read": {
+    reporter: true,
+    verifier: true,
+    response_coordinator: true,
+    system_administrator: true,
+    auditor: true,
+  },
 
   // gemini_advisory_request (BLOCK 22): Verifier C(own request)+R only —
   // an optional, non-authoritative external advisory call, never a
