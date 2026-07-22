@@ -57,6 +57,12 @@ describe("roleHasPermission — cross-role denial", () => {
     expect(roleHasPermission("system_administrator", "verification_review", "read")).toBe(false);
   });
 
+  it("every operational role can read notifications (own, scoped by RLS)", () => {
+    for (const role of ALL_ROLES) {
+      expect(roleHasPermission(role, "notification", "read")).toBe(true);
+    }
+  });
+
   it("only Verifier can create a gemini_advisory_request; Verifier and Auditor can read it", () => {
     expect(roleHasPermission("verifier", "gemini_advisory_request", "create")).toBe(true);
     for (const role of otherRoles("verifier")) {
@@ -79,6 +85,11 @@ describe("roleHasPermission — Auditor cannot mutate", () => {
     "response_task",
     "model_registry_entry",
     "audit_event",
+    "profile",
+    "role_assignment",
+    "disaster_event",
+    "system_setting",
+    "legal_hold",
   ];
 
   it("Auditor has zero mutating permission on any entity in the permission table", () => {
@@ -124,6 +135,50 @@ describe("roleHasPermission — Admin cannot validate or dispatch without a sepa
     expect(roleHasPermission("system_administrator", "role_assignment", "create")).toBe(true);
     expect(roleHasPermission("system_administrator", "system_setting", "configure")).toBe(true);
     expect(roleHasPermission("system_administrator", "model_registry_entry", "approve")).toBe(true);
+  });
+});
+
+describe("roleHasPermission — BLOCK 27 admin/auditor portal entries", () => {
+  it("every role may create its own deletion_request (self-service, like profile:update own) but only System Administrator may review one", () => {
+    for (const role of ALL_ROLES) {
+      expect(roleHasPermission(role, "deletion_request", "create")).toBe(true);
+    }
+    expect(roleHasPermission("system_administrator", "deletion_request", "update")).toBe(true);
+    for (const role of otherRoles("system_administrator")) {
+      expect(roleHasPermission(role, "deletion_request", "update")).toBe(false);
+    }
+  });
+
+  it("only System Administrator can place or update a legal_hold; Auditor gets read-only", () => {
+    expect(roleHasPermission("system_administrator", "legal_hold", "create")).toBe(true);
+    expect(roleHasPermission("system_administrator", "legal_hold", "update")).toBe(true);
+    expect(roleHasPermission("auditor", "legal_hold", "read")).toBe(true);
+    expect(roleHasPermission("auditor", "legal_hold", "create")).toBe(false);
+    for (const role of otherRoles("system_administrator")) {
+      expect(roleHasPermission(role, "legal_hold", "create")).toBe(false);
+    }
+  });
+
+  it("only System Administrator can configure a profile (Pengguna & Role); every role reads/updates their own", () => {
+    expect(roleHasPermission("system_administrator", "profile", "configure")).toBe(true);
+    for (const role of otherRoles("system_administrator")) {
+      expect(roleHasPermission(role, "profile", "configure")).toBe(false);
+    }
+    for (const role of ALL_ROLES) {
+      expect(roleHasPermission(role, "profile", "read")).toBe(true);
+    }
+  });
+
+  it("only System Administrator can create/update disaster_events; every role reads them", () => {
+    expect(roleHasPermission("system_administrator", "disaster_event", "create")).toBe(true);
+    expect(roleHasPermission("system_administrator", "disaster_event", "update")).toBe(true);
+    for (const role of otherRoles("system_administrator")) {
+      expect(roleHasPermission(role, "disaster_event", "create")).toBe(false);
+      expect(roleHasPermission(role, "disaster_event", "update")).toBe(false);
+    }
+    for (const role of ALL_ROLES) {
+      expect(roleHasPermission(role, "disaster_event", "read")).toBe(true);
+    }
   });
 });
 
