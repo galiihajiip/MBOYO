@@ -4,6 +4,8 @@ import { createServerSupabaseClient } from "../../../lib/supabase/server";
 import { requireApiPermission } from "../../../lib/api/authorize";
 import { respondOk, respondError } from "../../../lib/api/respond";
 import { resolveRequestId } from "../../../lib/api/request-id";
+import { checkRateLimit } from "../../../lib/api/rate-limit";
+import { ApiError } from "../../../lib/api/errors";
 import { createReport } from "../../../lib/reports/service/create";
 import { listReports } from "../../../lib/reports/service/list";
 
@@ -26,6 +28,16 @@ export async function POST(request: NextRequest) {
 
   try {
     const actor = await requireApiPermission("report", "create");
+
+    // Report submission is a Reporter-initiated write that can be replayed
+    // by the offline sync queue — rate-limited per profile (not IP) so one
+    // Reporter's burst never affects another, and so this survives shared
+    // NAT/campus networks common during a disaster response scenario.
+    const rateLimit = checkRateLimit({ key: "report:create", limit: 30, windowMs: 60_000 }, actor.profileId);
+    if (!rateLimit.allowed) {
+      throw new ApiError("rate_limited", "Terlalu banyak laporan dikirim. Coba lagi sebentar lagi.");
+    }
+
     const supabase = await createServerSupabaseClient();
 
     const body: unknown = await request.json().catch(() => null);
