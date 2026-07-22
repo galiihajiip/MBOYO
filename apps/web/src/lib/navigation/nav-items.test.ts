@@ -24,6 +24,7 @@ const EXPECTED_LABELS: Record<Role, string[]> = {
     "Peta Bukti",
     "Semua Laporan",
     "Permintaan Informasi",
+    "Analitik",
     "Notifikasi",
     "Profil",
   ],
