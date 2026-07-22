@@ -49,11 +49,20 @@ export class FakeQueryBuilder {
   ilike(...args: unknown[]): this {
     return this.record("ilike", args);
   }
+  like(...args: unknown[]): this {
+    return this.record("like", args);
+  }
   gte(...args: unknown[]): this {
     return this.record("gte", args);
   }
   lte(...args: unknown[]): this {
     return this.record("lte", args);
+  }
+  lt(...args: unknown[]): this {
+    return this.record("lt", args);
+  }
+  is(...args: unknown[]): this {
+    return this.record("is", args);
   }
   not(...args: unknown[]): this {
     return this.record("not", args);
@@ -75,6 +84,9 @@ export class FakeQueryBuilder {
   }
   insert(...args: unknown[]): this {
     return this.record("insert", args);
+  }
+  delete(...args: unknown[]): this {
+    return this.record("delete", args);
   }
 
   single<T>(): Promise<FakeQueryResult<T>> {
@@ -133,6 +145,24 @@ export interface FakeDbConfig {
     string,
     (path: string, ttlSeconds: number) => { data: { signedUrl: string } | null; error: { message: string } | null }
   >;
+  /**
+   * Keyed by bucket name, resolving a
+   * .storage.from(bucket).upload(path, body, options) call — used by
+   * lib/command/exports.ts to write generated CSV/GeoJSON files. `body` is
+   * passed through so a test can assert on the exact uploaded content
+   * (e.g. verifying field redaction was actually applied).
+   */
+  storageUpload?: Record<string, (path: string, body: unknown) => { error: { message: string } | null }>;
+  /**
+   * Keyed by bucket name, resolving a .storage.from(bucket).list(...) call
+   * — used by lib/admin/analytics.ts's storage-usage accounting. A single
+   * Resolver applies to every .list() call for that bucket; return an
+   * empty array on the second call in a paginated test to end the loop.
+   */
+  storageList?: Record<
+    string,
+    () => { data: { name: string; metadata: { size?: number } | null }[] | null; error: { message: string } | null }
+  >;
 }
 
 export function createFakeDb(config: FakeDbConfig) {
@@ -140,6 +170,7 @@ export function createFakeDb(config: FakeDbConfig) {
   const rpcCalls: Array<{ fn: string; args: unknown }> = [];
   const storageDownloadCalls: Array<{ bucket: string; path: string }> = [];
   const fromCallCountByTable: Record<string, number> = {};
+  const listCallCountByBucket: Record<string, number> = {};
 
   return {
     fromCalls,
@@ -187,6 +218,26 @@ export function createFakeDb(config: FakeDbConfig) {
               });
             }
             return Promise.resolve(resolver(path, ttlSeconds));
+          },
+          upload(path: string, body: unknown) {
+            const resolver = config.storageUpload?.[bucket];
+            if (!resolver) {
+              return Promise.resolve({ error: { message: `no fake configured for upload bucket ${bucket}` } });
+            }
+            return Promise.resolve(resolver(path, body));
+          },
+          list() {
+            const callIndex = listCallCountByBucket[bucket] ?? 0;
+            listCallCountByBucket[bucket] = callIndex + 1;
+            const resolver = config.storageList?.[bucket];
+            if (!resolver) {
+              return Promise.resolve({ data: [], error: null });
+            }
+            // Only the first call returns configured data; subsequent
+            // calls return empty so a paginated .list() loop terminates —
+            // matches this fake's "small, deterministic, test only needs
+            // one page" scope for storage-usage accounting tests.
+            return Promise.resolve(callIndex === 0 ? resolver() : { data: [], error: null });
           },
         };
       },
