@@ -1,6 +1,12 @@
 import { createServerClient } from "@supabase/ssr";
+import type { CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { loadClientEnv } from "@mboyo/domain";
+
+/** See lib/supabase/server.ts's identical constant for the full rationale — secure: true in production, httpOnly deliberately left as @supabase/ssr's default (false) since the browser client reads this cookie directly. */
+const HARDENED_COOKIE_OPTIONS: Partial<CookieOptions> = {
+  secure: process.env.NODE_ENV === "production",
+};
 
 /**
  * Refreshes the Supabase session cookie on every request that passes
@@ -37,7 +43,7 @@ export function createMiddlewareSupabaseClient(request: NextRequest) {
         }
         response = NextResponse.next({ request });
         for (const { name, value, options } of cookiesToSet) {
-          response.cookies.set(name, value, options);
+          response.cookies.set(name, value, { ...options, ...HARDENED_COOKIE_OPTIONS });
         }
       },
     },
