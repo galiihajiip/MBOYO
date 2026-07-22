@@ -3,6 +3,36 @@ import { createMiddlewareSupabaseClient } from "./lib/supabase/middleware";
 import { findRequiredRolesForPath, isPublicPath, ROLE_HOME_ROUTE } from "./lib/auth/route-map";
 import type { Role } from "@mboyo/domain";
 
+const MUTATING_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
+
+/**
+ * CSRF defense-in-depth (BLOCK 28) — every state-changing /api/* request
+ * must carry an Origin (or, failing that, Referer) header matching this
+ * deployment's own origin. The session cookie is already the primary
+ * authorization mechanism (Supabase's @supabase/ssr cookie, same-site by
+ * library default), but a same-site cookie alone doesn't stop every CSRF
+ * vector (e.g. some legacy browsers, some proxies) — an explicit
+ * same-origin check is the standard belt-and-suspenders control, and costs
+ * nothing for a legitimate same-origin fetch() call, which always sends
+ * Origin on a cross-site-capable method. GET/HEAD are read-only and
+ * excluded — CSRF targets state changes, not reads.
+ */
+export function isSameOriginRequest(request: NextRequest): boolean {
+  const origin = request.headers.get("origin") ?? request.headers.get("referer");
+  if (!origin) {
+    // No Origin/Referer at all — same-origin browser navigations and
+    // fetches always send one of these for a cross-site-capable method;
+    // its total absence is itself suspicious for a mutating request, so
+    // this fails closed (denied) rather than open.
+    return false;
+  }
+  try {
+    return new URL(origin).origin === request.nextUrl.origin;
+  } catch {
+    return false;
+  }
+}
+
 /**
  * Server-side route protection, per this block's requirements:
  * "installed Next.js-compatible middleware/proxy pattern" +
@@ -19,8 +49,16 @@ import type { Role } from "@mboyo/domain";
  * docs/product/RBAC_MATRIX.md.
  */
 export async function proxy(request: NextRequest) {
-  const { supabase, getResponse } = createMiddlewareSupabaseClient(request);
   const pathname = request.nextUrl.pathname;
+
+  if (pathname.startsWith("/api/") && MUTATING_METHODS.has(request.method) && !isSameOriginRequest(request)) {
+    return NextResponse.json(
+      { ok: false, error: { code: "forbidden", message: "Permintaan lintas asal tidak diizinkan." } },
+      { status: 403 },
+    );
+  }
+
+  const { supabase, getResponse } = createMiddlewareSupabaseClient(request);
 
   // getUser() (not getSession()) re-validates the JWT against Supabase Auth
   // on every call — getSession() alone would trust a possibly-stale/forged
