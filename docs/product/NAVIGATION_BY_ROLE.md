@@ -22,6 +22,7 @@ Navigation structure for each of the five role UIs, in Bahasa Indonesia per [AGE
 | **Peta Bukti** | Map view of incoming evidence by location, to spot spatial patterns (clustering, geofence mismatches) ahead of/alongside per-report review. | `report`, `geolocation_observation` | R |
 | **Semua Laporan** | Full report list across all statuses (not just the active queue), for lookup/reference. | `report` (all) | R |
 | **Permintaan Informasi** | Tracks reports where the Verifier chose "request info" — follow-up state pending Reporter response. | `report`, `verification_review` | R; C (new request-info decision) |
+| **Analitik** | Review count, agreement/override rate, review time, queue age, and quality-score distributions (BLOCK 26). | `verification_review`, `report` (aggregate) | R |
 | **Notifikasi** | Own notifications (new items in queue, Reporter responses to info requests). | `notification` (own) | R (own) |
 | **Profil** | Own account/profile management. | `profile` (own) | R/U (own) |
 
