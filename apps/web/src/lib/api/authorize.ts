@@ -7,6 +7,7 @@ import { ApiError } from "./errors";
 export interface ApiActor {
   userId: string;
   profileId: string;
+  organizationId: string;
   roles: Role[];
 }
 
@@ -36,9 +37,9 @@ export async function requireApiActor(): Promise<ApiActor> {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("id")
+    .select("id, organization_id")
     .eq("user_id", user.id)
-    .single<{ id: string }>();
+    .single<{ id: string; organization_id: string }>();
   if (!profile) {
     throw new ApiError("unauthenticated", "Profil tidak ditemukan.");
   }
@@ -53,6 +54,7 @@ export async function requireApiActor(): Promise<ApiActor> {
   return {
     userId: user.id,
     profileId: profile.id,
+    organizationId: profile.organization_id,
     roles: (roleRows ?? []).map((row) => row.role),
   };
 }
