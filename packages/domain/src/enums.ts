@@ -111,6 +111,7 @@ export const EVIDENCE_ERROR_CODES = [
   "decode_failed",
   "storage_upload_failed",
   "metadata_persist_failed",
+  "rate_limited",
   "internal_error",
 ] as const;
 export type EvidenceErrorCode = (typeof EVIDENCE_ERROR_CODES)[number];
@@ -123,3 +124,45 @@ export type EvidenceErrorCode = (typeof EVIDENCE_ERROR_CODES)[number];
  */
 export const LOCATION_SOURCES = ["gps", "manual_pin", "manual_address"] as const;
 export type LocationSource = (typeof LOCATION_SOURCES)[number];
+
+/**
+ * Escalation/notification severity levels (BLOCK 25) — mirrors
+ * public.notifications.level's check constraint
+ * (supabase/migrations/20260724050001_notification_dedup_and_rpcs.sql).
+ * Distinct from SeverityClass (model prediction) and PriorityLevel
+ * (operational task/cluster priority) — this is specifically the urgency
+ * of a notification/escalation event itself.
+ */
+export const NOTIFICATION_LEVELS = ["info", "warning", "high", "critical"] as const;
+export type NotificationLevel = (typeof NOTIFICATION_LEVELS)[number];
+
+/**
+ * The 6 escalation rule types this block implements — mirrors the `type`
+ * column values evaluate_escalations() (BLOCK 25 migration) writes, and
+ * the escalation.* system_settings key suffixes an Admin configures via
+ * /admin/eskalasi. `notifications.type` itself is a free-text column (no
+ * DB enum — see that migration's own comment on why), so this union is
+ * the TypeScript-side taxonomy convention, validated at the API boundary.
+ */
+export const ESCALATION_RULE_TYPES = [
+  "verified_destroyed_threshold",
+  "cluster_destroyed_radius",
+  "verifier_sla_breach",
+  "task_overdue",
+  "repeated_duplicate_source",
+  "repeated_analysis_failure",
+] as const;
+export type EscalationRuleType = (typeof ESCALATION_RULE_TYPES)[number];
+
+/** Mirrors public.disaster_event_status (supabase/migrations/20260716153709_core_schema.sql). */
+export const DISASTER_EVENT_STATUSES = ["active", "closed"] as const;
+export type DisasterEventStatus = (typeof DISASTER_EVENT_STATUSES)[number];
+
+/**
+ * Retention placeholders (BLOCK 27) — mirror
+ * public.deletion_request_status (supabase/migrations/20260726070002_retention_placeholders.sql).
+ * These are a workflow-tracking placeholder, not a working scheduled
+ * deletion job — see that migration's own comment.
+ */
+export const DELETION_REQUEST_STATUSES = ["pending", "approved", "denied", "completed"] as const;
+export type DeletionRequestStatus = (typeof DELETION_REQUEST_STATUSES)[number];
