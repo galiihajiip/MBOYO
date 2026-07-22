@@ -205,3 +205,64 @@ async function broadcastToClients(message: unknown): Promise<void> {
     client.postMessage(message);
   }
 }
+
+// ============================================================================
+// WEB PUSH (BLOCK 25)
+// ============================================================================
+
+interface PushNotificationPayload {
+  title: string;
+  body: string;
+  /** Deep-link path opened on notification click — see lib/notifications/send-push.ts. */
+  url: string;
+}
+
+/**
+ * Handles an incoming Web Push message (sent server-side via
+ * lib/notifications/send-push.ts using the same VAPID keypair this
+ * browser's subscription was created with). Always shows a notification —
+ * per the Push API spec, a push event that doesn't result in a shown
+ * notification risks the browser silently revoking the subscription
+ * ("showNotification not called" warning), so this handler never
+ * conditionally skips display.
+ */
+self.addEventListener("push", (event) => {
+  let payload: PushNotificationPayload;
+  try {
+    payload = event.data?.json() as PushNotificationPayload;
+  } catch {
+    payload = { title: "MBOYO", body: "Anda memiliki notifikasi baru.", url: "/" };
+  }
+
+  event.waitUntil(
+    self.registration.showNotification(payload.title, {
+      body: payload.body,
+      data: { url: payload.url },
+      icon: "/icons/icon-192.png",
+      badge: "/icons/icon-192.png",
+    }),
+  );
+});
+
+/**
+ * Focuses an already-open MBOYO tab at the notification's target URL if
+ * one exists, otherwise opens a new one — never opens a duplicate tab for
+ * a user who already has the app open, matching the "no repeated nagging"
+ * spirit of this block's push requirements applied to click behavior too.
+ */
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const targetUrl = (event.notification.data as { url?: string } | undefined)?.url ?? "/";
+
+  event.waitUntil(
+    (async () => {
+      const clients = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
+      const existing = clients.find((client) => new URL(client.url).pathname === targetUrl);
+      if (existing) {
+        await existing.focus();
+        return;
+      }
+      await self.clients.openWindow(targetUrl);
+    })(),
+  );
+});
