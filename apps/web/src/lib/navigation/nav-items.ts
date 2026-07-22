@@ -3,9 +3,6 @@ import type { Role } from "@mboyo/domain";
 export interface NavItem {
   label: string;
   href: string;
-  /** Icon key resolved by components/shell/NavIcon.tsx — kept as a string key
-   * (not a component reference) so this file stays a plain data module with
-   * no React import, safe to use from both server and client code. */
   icon: NavIconKey;
 }
 
@@ -41,13 +38,6 @@ export type NavIconKey =
   | "compliance"
   | "retention";
 
-/**
- * Per-role navigation, transcribed exactly from
- * docs/product/NAVIGATION_BY_ROLE.md — same item count, same order, same
- * Bahasa Indonesia labels. This is the single source every shell (desktop
- * sidebar, tablet collapsed rail, mobile bottom bar + overflow sheet) reads
- * from, so no surface can silently drift from what that document specifies.
- */
 export const ROLE_NAV_ITEMS: Record<Role, NavItem[]> = {
   reporter: [
     { label: "Beranda", href: "/reporter", icon: "home" },
@@ -80,7 +70,7 @@ export const ROLE_NAV_ITEMS: Record<Role, NavItem[]> = {
   system_administrator: [
     { label: "Administrasi", href: "/admin", icon: "admin" },
     { label: "Pengguna & Role", href: "/admin/pengguna", icon: "users" },
-    { label: "Event Bencana", href: "/admin/event", icon: "event" },
+    { label: "Kejadian Bencana", href: "/admin/event", icon: "event" },
     { label: "Aturan Eskalasi", href: "/admin/eskalasi", icon: "escalation" },
     { label: "Integrasi", href: "/admin/integrasi", icon: "integration" },
     { label: "Kesehatan Sistem", href: "/admin/kesehatan", icon: "health" },
@@ -98,12 +88,4 @@ export const ROLE_NAV_ITEMS: Record<Role, NavItem[]> = {
   ],
 };
 
-/**
- * Mobile bottom-tab-bar item count per role, per
- * docs/product/INFORMATION_ARCHITECTURE.md's responsive rule: "bottom tab
- * bar for the 4-5 most-used items + 'More' overflow sheet for the rest."
- * The first N items of ROLE_NAV_ITEMS[role] are the bottom-bar items; the
- * remainder go in the overflow sheet. Profil is always last and always
- * overflows except for roles with <= this count total items.
- */
 export const MOBILE_BOTTOM_BAR_COUNT = 4;

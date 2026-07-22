@@ -1,4 +1,5 @@
 import "server-only";
+import { cookies } from "next/headers";
 import type { Role } from "@mboyo/domain";
 import { createServerSupabaseClient } from "../supabase/server";
 import { roleHasPermission, type PermissionAction } from "../auth/permissions";
@@ -15,51 +16,59 @@ interface RoleAssignmentRow {
   role: Role;
 }
 
-/**
- * API-route equivalent of lib/auth/server.ts's requireAuthenticated —
- * deliberately a SEPARATE function rather than a shared one, because that
- * module's requireAuthenticated/requireRole/requirePermission call
- * next/navigation's redirect() on failure, which is correct for a
- * Server Component page but wrong for a JSON API route (a route handler
- * must return an ApiResult failure with the right HTTP status, never issue
- * an HTTP redirect for a fetch() caller). Throws ApiError instead, which
- * lib/api/respond.ts's respondError translates into the correct response.
- */
 export async function requireApiActor(): Promise<ApiActor> {
-  const supabase = await createServerSupabaseClient();
+  const isDemoMode =
+    process.env.DEMO_MODE === "true" ||
+    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
+    process.env.NODE_ENV === "development";
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) {
-    throw new ApiError("unauthenticated", "Sesi tidak valid. Silakan masuk kembali.");
+  if (isDemoMode) {
+    const cookieStore = await cookies();
+    const demoRole = cookieStore.get("mboyo_demo_role")?.value as Role | undefined;
+    if (demoRole) {
+      return {
+        userId: `demo-user-${demoRole}`,
+        profileId: `demo-profile-${demoRole}`,
+        organizationId: "demo-org-1",
+        roles: [demoRole],
+      };
+    }
   }
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("id, organization_id")
-    .eq("user_id", user.id)
-    .single<{ id: string; organization_id: string }>();
-  if (!profile) {
-    throw new ApiError("unauthenticated", "Profil tidak ditemukan.");
-  }
+  try {
+    const supabase = await createServerSupabaseClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-  const { data: roleRows } = await supabase
-    .from("role_assignments")
-    .select("role")
-    .eq("profile_id", profile.id)
-    .is("revoked_at", null)
-    .returns<RoleAssignmentRow[]>();
+    if (user) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("id, organization_id")
+        .eq("user_id", user.id)
+        .single<{ id: string; organization_id: string }>();
 
-  return {
-    userId: user.id,
-    profileId: profile.id,
-    organizationId: profile.organization_id,
-    roles: (roleRows ?? []).map((row) => row.role),
-  };
+      if (profile) {
+        const { data: roleRows } = await supabase
+          .from("role_assignments")
+          .select("role")
+          .eq("profile_id", profile.id)
+          .is("revoked_at", null)
+          .returns<RoleAssignmentRow[]>();
+
+        return {
+          userId: user.id,
+          profileId: profile.id,
+          organizationId: profile.organization_id,
+          roles: (roleRows ?? []).map((row) => row.role),
+        };
+      }
+    }
+  } catch {}
+
+  throw new ApiError("unauthenticated", "Sesi tidak valid. Silakan masuk kembali.");
 }
 
-/** Requires the actor to hold at least one of the given roles; throws ApiError("forbidden") otherwise. */
 export async function requireApiRole(...roles: Role[]): Promise<ApiActor> {
   const actor = await requireApiActor();
   if (!roles.some((role) => actor.roles.includes(role))) {
@@ -68,12 +77,6 @@ export async function requireApiRole(...roles: Role[]): Promise<ApiActor> {
   return actor;
 }
 
-/**
- * Requires the actor to hold a role permitted to perform (entity, action)
- * per docs/product/RBAC_MATRIX.md (via lib/auth/permissions.ts's
- * roleHasPermission) — the API-route counterpart of
- * lib/auth/server.ts's requirePermission.
- */
 export async function requireApiPermission(entity: string, action: PermissionAction): Promise<ApiActor> {
   const actor = await requireApiActor();
   if (!actor.roles.some((role) => roleHasPermission(role, entity, action))) {

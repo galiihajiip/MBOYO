@@ -23,27 +23,47 @@ export interface ModelRegistryEntryDto {
   createdAt: string;
 }
 
-/** Lists every model_registry_entries row, most recently trained first — Auditor's model registry read. */
 export async function listModelRegistryEntries(db: CommandDbClient): Promise<ModelRegistryEntryDto[]> {
-  const { data, error } = await db
-    .from("model_registry_entries")
-    .select("*")
-    .order("trained_at", { ascending: false })
-    .returns<ModelRegistryEntryRow[]>();
+  const isDemoMode =
+    process.env.DEMO_MODE === "true" ||
+    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
+    process.env.NODE_ENV === "development";
 
-  if (error) {
-    throw new ApiError("internal_error", "Gagal memuat riwayat model registry.");
+  if (isDemoMode) {
+    return [
+      {
+        id: "demo-model-v1",
+        version: "v1.0.0-mobile-net-v3",
+        artifactPath: "models/v1.0.0-mobile-net-v3.onnx",
+        trainedAt: new Date().toISOString(),
+        promotedAt: new Date().toISOString(),
+        isActive: true,
+        createdAt: new Date().toISOString(),
+      },
+    ];
   }
 
-  return (data ?? []).map((row) => ({
-    id: row.id,
-    version: row.version,
-    artifactPath: row.artifact_path,
-    trainedAt: row.trained_at,
-    promotedAt: row.promoted_at,
-    isActive: row.is_active,
-    createdAt: row.created_at,
-  }));
+  try {
+    const { data, error } = await db
+      .from("model_registry_entries")
+      .select("*")
+      .order("trained_at", { ascending: false })
+      .returns<ModelRegistryEntryRow[]>();
+
+    if (!error && data) {
+      return data.map((row) => ({
+        id: row.id,
+        version: row.version,
+        artifactPath: row.artifact_path,
+        trainedAt: row.trained_at,
+        promotedAt: row.promoted_at,
+        isActive: row.is_active,
+        createdAt: row.created_at,
+      }));
+    }
+  } catch {}
+
+  throw new ApiError("internal_error", "Gagal memuat riwayat model registry.");
 }
 
 interface ModelEvaluationRow {
@@ -68,77 +88,131 @@ export interface ModelEvaluationDto {
   reportPath: string;
 }
 
-/** Lists every model_evaluations row — Auditor's "evaluation gates"/model comparison read. */
 export async function listModelEvaluations(db: CommandDbClient): Promise<ModelEvaluationDto[]> {
-  const { data, error } = await db
-    .from("model_evaluations")
-    .select("*")
-    .order("evaluated_at", { ascending: false })
-    .returns<ModelEvaluationRow[]>();
+  const isDemoMode =
+    process.env.DEMO_MODE === "true" ||
+    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
+    process.env.NODE_ENV === "development";
 
-  if (error) {
-    throw new ApiError("internal_error", "Gagal memuat riwayat evaluasi model.");
+  if (isDemoMode) {
+    return [
+      {
+        id: "demo-eval-1",
+        modelRegistryEntryId: "demo-model-v1",
+        datasetIdentity: "test-set-jabar-2026",
+        macroF1: 0.89,
+        destroyedRecall: 0.94,
+        calibrationError: 0.03,
+        evaluatedAt: new Date().toISOString(),
+        reportPath: "reports/eval-v1.0.0.pdf",
+      },
+    ];
   }
 
-  return (data ?? []).map((row) => ({
-    id: row.id,
-    modelRegistryEntryId: row.model_registry_entry_id,
-    datasetIdentity: row.dataset_identity,
-    macroF1: Number(row.macro_f1),
-    destroyedRecall: Number(row.destroyed_recall),
-    calibrationError: Number(row.calibration_error),
-    evaluatedAt: row.evaluated_at,
-    reportPath: row.report_path,
-  }));
+  try {
+    const { data, error } = await db
+      .from("model_evaluations")
+      .select("*")
+      .order("evaluated_at", { ascending: false })
+      .returns<ModelEvaluationRow[]>();
+
+    if (!error && data) {
+      return data.map((row) => ({
+        id: row.id,
+        modelRegistryEntryId: row.model_registry_entry_id,
+        datasetIdentity: row.dataset_identity,
+        macroF1: Number(row.macro_f1),
+        destroyedRecall: Number(row.destroyed_recall),
+        calibrationError: Number(row.calibration_error),
+        evaluatedAt: row.evaluated_at,
+        reportPath: row.report_path,
+      }));
+    }
+  } catch {}
+
+  throw new ApiError("internal_error", "Gagal memuat riwayat evaluasi model.");
 }
 
 interface ModelPredictionCountRow {
   model_registry_entry_id: string | null;
 }
 
-/** Model usage — prediction count per registry entry, joining analysis_jobs.model_registry_entry_id (the FK model_predictions itself doesn't carry directly). */
 export async function getModelUsageSummary(db: CommandDbClient): Promise<ModelUsageSummary[]> {
-  const [entriesResult, jobsResult] = await Promise.all([
-    db.from("model_registry_entries").select("id, version, is_active").returns<{ id: string; version: string; is_active: boolean }[]>(),
-    db.from("analysis_jobs").select("model_registry_entry_id").returns<ModelPredictionCountRow[]>(),
-  ]);
+  const isDemoMode =
+    process.env.DEMO_MODE === "true" ||
+    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
+    process.env.NODE_ENV === "development";
 
-  if (entriesResult.error || jobsResult.error) {
-    throw new ApiError("internal_error", "Gagal memuat ringkasan penggunaan model.");
+  if (isDemoMode) {
+    return [
+      {
+        modelRegistryEntryId: "demo-model-v1",
+        version: "v1.0.0-mobile-net-v3",
+        isActive: true,
+        predictionCount: 154,
+      },
+    ];
   }
 
-  const countByEntryId = new Map<string, number>();
-  for (const job of jobsResult.data ?? []) {
-    if (!job.model_registry_entry_id) continue;
-    countByEntryId.set(job.model_registry_entry_id, (countByEntryId.get(job.model_registry_entry_id) ?? 0) + 1);
-  }
+  try {
+    const [entriesResult, jobsResult] = await Promise.all([
+      db.from("model_registry_entries").select("id, version, is_active").returns<{ id: string; version: string; is_active: boolean }[]>(),
+      db.from("analysis_jobs").select("model_registry_entry_id").returns<ModelPredictionCountRow[]>(),
+    ]);
 
-  return (entriesResult.data ?? []).map((entry) => ({
-    modelRegistryEntryId: entry.id,
-    version: entry.version,
-    isActive: entry.is_active,
-    predictionCount: countByEntryId.get(entry.id) ?? 0,
-  }));
+    if (!entriesResult.error && !jobsResult.error) {
+      const countByEntryId = new Map<string, number>();
+      for (const job of jobsResult.data ?? []) {
+        if (!job.model_registry_entry_id) continue;
+        countByEntryId.set(job.model_registry_entry_id, (countByEntryId.get(job.model_registry_entry_id) ?? 0) + 1);
+      }
+
+      return (entriesResult.data ?? []).map((entry) => ({
+        modelRegistryEntryId: entry.id,
+        version: entry.version,
+        isActive: entry.is_active,
+        predictionCount: countByEntryId.get(entry.id) ?? 0,
+      }));
+    }
+  } catch {}
+
+  throw new ApiError("internal_error", "Gagal memuat ringkasan penggunaan model.");
 }
 
 interface GeminiRequestStatusRow {
   status: "succeeded" | "failed" | "timed_out" | "rate_limited";
 }
 
-/** Gemini usage log summary — org-wide, for Auditor's "external advisory" oversight. */
 export async function getGeminiUsageSummary(db: CommandDbClient): Promise<GeminiUsageSummary> {
-  const { data, error } = await db.from("gemini_advisory_requests").select("status").returns<GeminiRequestStatusRow[]>();
+  const isDemoMode =
+    process.env.DEMO_MODE === "true" ||
+    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
+    process.env.NODE_ENV === "development";
 
-  if (error) {
-    throw new ApiError("internal_error", "Gagal memuat ringkasan penggunaan analisis tambahan eksternal.");
+  if (isDemoMode) {
+    return {
+      totalRequests: 12,
+      succeededCount: 12,
+      failedCount: 0,
+      timedOutCount: 0,
+      rateLimitedCount: 0,
+    };
   }
 
-  const rows = data ?? [];
-  return {
-    totalRequests: rows.length,
-    succeededCount: rows.filter((r) => r.status === "succeeded").length,
-    failedCount: rows.filter((r) => r.status === "failed").length,
-    timedOutCount: rows.filter((r) => r.status === "timed_out").length,
-    rateLimitedCount: rows.filter((r) => r.status === "rate_limited").length,
-  };
+  try {
+    const { data, error } = await db.from("gemini_advisory_requests").select("status").returns<GeminiRequestStatusRow[]>();
+
+    if (!error && data) {
+      const rows = data;
+      return {
+        totalRequests: rows.length,
+        succeededCount: rows.filter((r) => r.status === "succeeded").length,
+        failedCount: rows.filter((r) => r.status === "failed").length,
+        timedOutCount: rows.filter((r) => r.status === "timed_out").length,
+        rateLimitedCount: rows.filter((r) => r.status === "rate_limited").length,
+      };
+    }
+  } catch {}
+
+  throw new ApiError("internal_error", "Gagal memuat ringkasan penggunaan analisis tambahan eksternal.");
 }

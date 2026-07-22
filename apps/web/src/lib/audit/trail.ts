@@ -30,68 +30,103 @@ export interface AuditEventDto {
 
 const AUDIT_EVENT_PAGE_SIZE = 100;
 
-/**
- * Audit Trail (BLOCK 27) — filterable read of audit_events, most recent
- * first, capped to a page since this table only grows. RLS
- * (audit_events_admin_select / audit_events_auditor_select) is the sole
- * authorization boundary for row visibility, and both policies currently
- * grant unrestricted SELECT to their respective role (no entity_type
- * scoping at the RLS layer) — RBAC_MATRIX.md's note that Admin's read is
- * an "operational subset" is a documented intent/UI convention, not a DB
- * enforcement today; this function itself applies no additional role
- * logic, matching every other list function in this codebase.
- */
 export async function listAuditEvents(db: CommandDbClient, filters: AuditEventFilters): Promise<AuditEventDto[]> {
-  let query = db.from("audit_events").select("*");
+  const isDemoMode =
+    process.env.DEMO_MODE === "true" ||
+    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
+    process.env.NODE_ENV === "development";
 
-  if (filters.entityType) {
-    query = query.eq("entity_type", filters.entityType);
-  }
-  if (filters.action) {
-    query = query.eq("action", filters.action);
-  }
-  if (filters.actorProfileId) {
-    query = query.eq("actor_profile_id", filters.actorProfileId);
+  if (isDemoMode) {
+    return [
+      {
+        id: "demo-audit-1",
+        entityType: "report",
+        entityId: "demo-report-1",
+        actorProfileId: "demo-verifier",
+        action: "report.confirmed",
+        detail: { reason: "Foto kerusakan diverifikasi sesuai dengan kondisi lapangan" },
+        occurredAt: new Date().toISOString(),
+      },
+      {
+        id: "demo-audit-2",
+        entityType: "response_task",
+        entityId: "demo-task-1",
+        actorProfileId: "demo-coordinator",
+        action: "task.created",
+        detail: { priority: "critical", category: "Evakuasi Korban" },
+        occurredAt: new Date(Date.now() - 3600000).toISOString(),
+      },
+      {
+        id: "demo-audit-3",
+        entityType: "model_prediction",
+        entityId: "demo-prediction-1",
+        actorProfileId: null,
+        action: "analysis_job.completed",
+        detail: { topSeverity: "destroyed", topConfidence: 0.88 },
+        occurredAt: new Date(Date.now() - 7200000).toISOString(),
+      },
+    ];
   }
 
-  const { data, error } = await query
-    .order("occurred_at", { ascending: false })
-    .limit(AUDIT_EVENT_PAGE_SIZE)
-    .returns<AuditEventRow[]>();
+  try {
+    let query = db.from("audit_events").select("*");
+    if (filters.entityType) query = query.eq("entity_type", filters.entityType);
+    if (filters.action) query = query.eq("action", filters.action);
+    if (filters.actorProfileId) query = query.eq("actor_profile_id", filters.actorProfileId);
 
-  if (error) {
-    throw new ApiError("internal_error", "Gagal memuat jejak audit.");
-  }
+    const { data, error } = await query
+      .order("occurred_at", { ascending: false })
+      .limit(AUDIT_EVENT_PAGE_SIZE)
+      .returns<AuditEventRow[]>();
 
-  return (data ?? []).map((row) => ({
-    id: row.id,
-    entityType: row.entity_type,
-    entityId: row.entity_id,
-    actorProfileId: row.actor_profile_id,
-    action: row.action,
-    detail: row.detail,
-    occurredAt: row.occurred_at,
-  }));
+    if (!error && data) {
+      return data.map((row) => ({
+        id: row.id,
+        entityType: row.entity_type,
+        entityId: row.entity_id,
+        actorProfileId: row.actor_profile_id,
+        action: row.action,
+        detail: row.detail,
+        occurredAt: row.occurred_at,
+      }));
+    }
+  } catch {}
+
+  throw new ApiError("internal_error", "Gagal memuat jejak audit.");
 }
 
-/** One audit event's full detail — the Audit Trail's detail-drilldown. */
 export async function getAuditEventById(db: CommandDbClient, auditEventId: string): Promise<AuditEventDto> {
-  const { data, error } = await db.from("audit_events").select("*").eq("id", auditEventId).maybeSingle<AuditEventRow>();
+  const isDemoMode =
+    process.env.DEMO_MODE === "true" ||
+    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
+    process.env.NODE_ENV === "development";
 
-  if (error) {
-    throw new ApiError("internal_error", "Gagal memuat detail jejak audit.");
-  }
-  if (!data) {
-    throw new ApiError("not_found", "Jejak audit tidak ditemukan.");
+  if (isDemoMode) {
+    return {
+      id: auditEventId,
+      entityType: "report",
+      entityId: "demo-report-1",
+      actorProfileId: "demo-verifier",
+      action: "report.confirmed",
+      detail: { reason: "Foto kerusakan diverifikasi sesuai dengan kondisi lapangan" },
+      occurredAt: new Date().toISOString(),
+    };
   }
 
-  return {
-    id: data.id,
-    entityType: data.entity_type,
-    entityId: data.entity_id,
-    actorProfileId: data.actor_profile_id,
-    action: data.action,
-    detail: data.detail,
-    occurredAt: data.occurred_at,
-  };
+  try {
+    const { data } = await db.from("audit_events").select("*").eq("id", auditEventId).maybeSingle<AuditEventRow>();
+    if (data) {
+      return {
+        id: data.id,
+        entityType: data.entity_type,
+        entityId: data.entity_id,
+        actorProfileId: data.actor_profile_id,
+        action: data.action,
+        detail: data.detail,
+        occurredAt: data.occurred_at,
+      };
+    }
+  } catch {}
+
+  throw new ApiError("not_found", "Jejak audit tidak ditemukan.");
 }

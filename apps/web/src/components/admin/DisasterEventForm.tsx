@@ -4,15 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button, Input, Textarea } from "@mboyo/ui";
 
-/**
- * Event Bencana creation form (BLOCK 27) — name + optional starts_at +
- * optional geofence as raw GeoJSON Polygon text. A dedicated map-drawing
- * geofence editor is out of this block's scope (no such UI exists
- * anywhere in this codebase yet) — accepting GeoJSON text directly is the
- * honest, functional minimum: create_disaster_event() converts it via
- * st_geomfromgeojson server-side, so a caller who has geofence
- * coordinates (e.g. from an external GIS tool) can still set one.
- */
 export function DisasterEventForm() {
   const router = useRouter();
   const [name, setName] = useState("");
@@ -34,7 +25,7 @@ export function DisasterEventForm() {
       });
       const body = (await response.json()) as { ok: boolean; error?: { message: string } };
       if (!body.ok) {
-        setError(body.error?.message ?? "Gagal membuat event bencana.");
+        setError(body.error?.message ?? "Gagal menambahkan kejadian bencana.");
         return;
       }
       setName("");
@@ -50,7 +41,7 @@ export function DisasterEventForm() {
   return (
     <div className="flex flex-col gap-3 rounded-md border border-brand-border bg-surface-container-lowest p-4">
       <div className="flex flex-col gap-1">
-        <label className="font-sans text-xs font-semibold text-on-surface">Nama Event</label>
+        <label className="font-sans text-xs font-semibold text-on-surface">Nama Kejadian Bencana</label>
         <Input value={name} onChange={(event) => setName(event.target.value)} placeholder="Gempa Cianjur 2026" />
       </div>
 
@@ -66,7 +57,7 @@ export function DisasterEventForm() {
       {error ? <p className="font-sans text-xs text-brand-critical-red">{error}</p> : null}
 
       <Button type="button" onClick={() => void handleSubmit()} disabled={isSubmitting || name.trim().length === 0} className="self-start">
-        {isSubmitting ? "Membuat..." : "Buat Event Bencana"}
+        {isSubmitting ? "Menambahkan..." : "Tambah Kejadian Bencana"}
       </Button>
     </div>
   );

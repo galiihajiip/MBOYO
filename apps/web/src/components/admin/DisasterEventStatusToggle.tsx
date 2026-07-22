@@ -27,7 +27,7 @@ export function DisasterEventStatusToggle({ eventId, status }: DisasterEventStat
       });
       const body = (await response.json()) as { ok: boolean; error?: { message: string } };
       if (!body.ok) {
-        setError(body.error?.message ?? "Gagal mengubah status event.");
+        setError(body.error?.message ?? "Gagal mengubah status kejadian bencana.");
         return;
       }
       router.refresh();
@@ -41,7 +41,7 @@ export function DisasterEventStatusToggle({ eventId, status }: DisasterEventStat
   return (
     <div className="flex items-center gap-2">
       <Button type="button" variant="ghost" onClick={() => void toggle()} disabled={isSubmitting}>
-        {status === "active" ? "Tutup Event" : "Aktifkan Kembali"}
+        {status === "active" ? "Selesaikan Kejadian" : "Aktifkan Kembali"}
       </Button>
       {error ? <p className="font-sans text-xs text-brand-critical-red">{error}</p> : null}
     </div>

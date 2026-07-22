@@ -6,16 +6,15 @@ import { DisasterEventForm } from "../../../components/admin/DisasterEventForm";
 import { DisasterEventStatusToggle } from "../../../components/admin/DisasterEventStatusToggle";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "Event Bencana — MBOYO" };
+export const metadata: Metadata = { title: "Kejadian Bencana — MBOYO" };
 
-/** Event Bencana (BLOCK 27) — replacing the earlier stub. Create/close/reopen events, with geofence accepted as GeoJSON text. */
 export default async function EventBencanaPage() {
   const supabase = await createServerSupabaseClient();
   const events = await listDisasterEvents(supabase);
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="font-sans text-2xl font-bold text-on-surface">Event Bencana</h1>
+      <h1 className="font-sans text-2xl font-bold text-on-surface">Kejadian Bencana</h1>
 
       <DisasterEventForm />
 
@@ -25,7 +24,7 @@ export default async function EventBencanaPage() {
             <div className="flex flex-col gap-1">
               <div className="flex items-center gap-2">
                 <span className="font-sans text-sm font-semibold text-on-surface">{event.name}</span>
-                <Badge tone={event.status === "active" ? "success" : "neutral"}>{event.status}</Badge>
+                <Badge tone={event.status === "active" ? "success" : "neutral"}>{event.status === "active" ? "Aktif" : "Selesai"}</Badge>
               </div>
               <span className="font-mono text-xs text-on-surface-variant">
                 Mulai {new Date(event.startsAt).toLocaleDateString("id-ID")}

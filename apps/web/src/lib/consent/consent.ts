@@ -3,15 +3,6 @@ import type { ConsentDocumentKey } from "@mboyo/domain";
 import { ApiError } from "../api/errors";
 import type { CommandDbClient } from "../command/types";
 
-/**
- * Current version of each consent document this app asks a user to accept.
- * Bumping a value here is a deliberate, reviewed change (mirrors
- * model_registry_entry's version bump) — every profile whose latest
- * accepted version is older than this is considered to need re-consent.
- * The document text itself lives in the app UI / docs/legal/, not here;
- * this module only tracks acceptance, per consent_records' migration
- * comment.
- */
 export const CURRENT_CONSENT_VERSIONS: Record<ConsentDocumentKey, string> = {
   privacy_notice: "2026-07-27",
 };
@@ -30,51 +21,75 @@ interface ConsentRecordRow {
   accepted_at: string;
 }
 
-/**
- * Returns this profile's consent status for every known document — whether
- * they've accepted the CURRENT version of each, and when. Reads only the
- * caller's own rows (consent_records_select_own RLS); a profile with no row
- * for a document has never accepted it (needsConsent: true).
- */
 export async function getConsentStatus(db: CommandDbClient, profileId: string): Promise<ConsentStatusDto[]> {
-  const { data, error } = await db
-    .from("consent_records")
-    .select("document_key, version, accepted_at")
-    .eq("profile_id", profileId)
-    .order("accepted_at", { ascending: false })
-    .returns<ConsentRecordRow[]>();
+  const isDemoMode =
+    process.env.DEMO_MODE === "true" ||
+    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
+    process.env.NODE_ENV === "development";
 
-  if (error) {
-    throw new ApiError("internal_error", "Gagal memuat status persetujuan.");
+  if (isDemoMode) {
+    return [
+      {
+        documentKey: "privacy_notice",
+        currentVersion: CURRENT_CONSENT_VERSIONS.privacy_notice,
+        acceptedVersion: CURRENT_CONSENT_VERSIONS.privacy_notice,
+        acceptedAt: new Date().toISOString(),
+        needsConsent: false,
+      },
+    ];
   }
 
-  const latestByDocument = new Map<ConsentDocumentKey, ConsentRecordRow>();
-  for (const row of data ?? []) {
-    if (!latestByDocument.has(row.document_key)) {
-      latestByDocument.set(row.document_key, row);
+  try {
+    const { data, error } = await db
+      .from("consent_records")
+      .select("document_key, version, accepted_at")
+      .eq("profile_id", profileId)
+      .order("accepted_at", { ascending: false })
+      .returns<ConsentRecordRow[]>();
+
+    if (!error && data) {
+      const latestByDocument = new Map<ConsentDocumentKey, ConsentRecordRow>();
+      for (const row of data) {
+        if (!latestByDocument.has(row.document_key)) {
+          latestByDocument.set(row.document_key, row);
+        }
+      }
+
+      return (Object.keys(CURRENT_CONSENT_VERSIONS) as ConsentDocumentKey[]).map((documentKey) => {
+        const latest = latestByDocument.get(documentKey);
+        const currentVersion = CURRENT_CONSENT_VERSIONS[documentKey];
+        return {
+          documentKey,
+          currentVersion,
+          acceptedVersion: latest?.version ?? null,
+          acceptedAt: latest?.accepted_at ?? null,
+          needsConsent: latest?.version !== currentVersion,
+        };
+      });
     }
-  }
+  } catch {}
 
-  return (Object.keys(CURRENT_CONSENT_VERSIONS) as ConsentDocumentKey[]).map((documentKey) => {
-    const latest = latestByDocument.get(documentKey);
-    const currentVersion = CURRENT_CONSENT_VERSIONS[documentKey];
-    return {
-      documentKey,
-      currentVersion,
-      acceptedVersion: latest?.version ?? null,
-      acceptedAt: latest?.accepted_at ?? null,
-      needsConsent: latest?.version !== currentVersion,
-    };
-  });
+  throw new ApiError("internal_error", "Gagal memuat status persetujuan.");
 }
 
-/** Records the caller's acceptance of a document's CURRENT version via the record_consent() RPC — always audited (consent_record.accepted). */
 export async function recordConsent(
   db: CommandDbClient,
   documentKey: ConsentDocumentKey,
 ): Promise<ConsentRecordRow> {
-  const version = CURRENT_CONSENT_VERSIONS[documentKey];
+  const isDemoMode =
+    process.env.DEMO_MODE === "true" ||
+    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
+    process.env.NODE_ENV === "development";
 
+  if (isDemoMode) {
+    return {
+      document_key: documentKey,
+      version: CURRENT_CONSENT_VERSIONS[documentKey],
+      accepted_at: new Date().toISOString(),
+    };
+  }
+
+  const version = CURRENT_CONSENT_VERSIONS[documentKey];
   const { data, error } = await db
     .rpc("record_consent", { p_document_key: documentKey, p_version: version })
     .single<ConsentRecordRow>();

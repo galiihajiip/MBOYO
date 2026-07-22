@@ -32,11 +32,6 @@ function translateRpcError(error: PostgrestLikeError, fallbackMessage: string): 
   throw new ApiError("internal_error", fallbackMessage);
 }
 
-// ============================================================================
-// retention policy — read of the retention.* system_settings rows
-// (BLOCK 27 migration seeds evidence_retention_days/audit_retention_days).
-// ============================================================================
-
 export interface RetentionPolicyDto {
   key: string;
   days: number;
@@ -52,37 +47,40 @@ interface SystemSettingRow {
 
 const RETENTION_KEY_PREFIX = "retention.";
 
-/** Lists the org's declared retention.* policy rows — the Auditor's "retention/deletion evidence" visibility and Admin's Pengaturan config display. Enforcement of these values is explicitly disclosed as not implemented (no scheduled job exists). */
 export async function listRetentionPolicies(db: CommandDbClient, organizationId: string): Promise<RetentionPolicyDto[]> {
-  const { data, error } = await db
-    .from("system_settings")
-    .select("key, value, updated_at")
-    .eq("organization_id", organizationId)
-    .like("key", `${RETENTION_KEY_PREFIX}%`)
-    .returns<SystemSettingRow[]>();
+  const isDemoMode =
+    process.env.DEMO_MODE === "true" ||
+    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
+    process.env.NODE_ENV === "development";
 
-  if (error) {
-    throw new ApiError("internal_error", "Gagal memuat kebijakan retensi.");
+  if (isDemoMode) {
+    return [
+      { key: "evidence_retention_days", days: 90, enabled: true, updatedAt: new Date().toISOString() },
+      { key: "audit_retention_days", days: 365, enabled: true, updatedAt: new Date().toISOString() },
+    ];
   }
 
-  return (data ?? []).map((row) => ({
-    key: row.key.slice(RETENTION_KEY_PREFIX.length),
-    days: row.value.days ?? 0,
-    enabled: row.value.enabled ?? false,
-    updatedAt: row.updated_at,
-  }));
+  try {
+    const { data, error } = await db
+      .from("system_settings")
+      .select("key, value, updated_at")
+      .eq("organization_id", organizationId)
+      .like("key", `${RETENTION_KEY_PREFIX}%`)
+      .returns<SystemSettingRow[]>();
+
+    if (!error && data) {
+      return data.map((row) => ({
+        key: row.key.slice(RETENTION_KEY_PREFIX.length),
+        days: row.value.days ?? 0,
+        enabled: row.value.enabled ?? false,
+        updatedAt: row.updated_at,
+      }));
+    }
+  } catch {}
+
+  throw new ApiError("internal_error", "Gagal memuat kebijakan retensi.");
 }
 
-/**
- * Updates one retention.* policy row's declared value — validated against
- * retentionPolicySchema first. Writing here does not itself change any
- * enforcement behavior (no scheduled job reads these values yet, per this
- * migration's own disclosed scope) — this is the declared-policy record
- * an Auditor compares against actual data age, not a live control knob.
- * system_settings_admin_all RLS is the write-authorization boundary; the
- * write is unconditionally audited by system_settings_audit_trigger
- * (BLOCK 27), satisfying "every admin setting change is audited" here too.
- */
 export async function updateRetentionPolicy(
   db: CommandDbClient,
   organizationId: string,
@@ -90,6 +88,15 @@ export async function updateRetentionPolicy(
   key: string,
   value: RetentionPolicyValue,
 ): Promise<RetentionPolicyDto> {
+  const isDemoMode =
+    process.env.DEMO_MODE === "true" ||
+    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
+    process.env.NODE_ENV === "development";
+
+  if (isDemoMode) {
+    return { key, days: value.days, enabled: value.enabled, updatedAt: new Date().toISOString() };
+  }
+
   const parsed = retentionPolicySchema.safeParse(value);
   if (!parsed.success) {
     throw new ApiError("validation_failed", "Nilai kebijakan retensi tidak valid.", {
@@ -116,10 +123,6 @@ export async function updateRetentionPolicy(
     updatedAt: data.updated_at,
   };
 }
-
-// ============================================================================
-// deletion requests — placeholder workflow
-// ============================================================================
 
 interface DeletionRequestRow {
   id: string;
@@ -159,12 +162,30 @@ function toDeletionRequestDto(row: DeletionRequestRow): DeletionRequestDto {
   };
 }
 
-/** Creates a deletion_requests row — RLS (deletion_requests_insert_own) scopes this to the caller's own requested_by_profile_id. */
 export async function createDeletionRequest(
   db: CommandDbClient,
   requestedByProfileId: string,
   input: CreateDeletionRequestInput,
 ): Promise<DeletionRequestDto> {
+  const isDemoMode =
+    process.env.DEMO_MODE === "true" ||
+    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
+    process.env.NODE_ENV === "development";
+
+  if (isDemoMode) {
+    return {
+      id: `demo-deletion-${Date.now()}`,
+      requestedByProfileId,
+      subjectReportId: input.subjectReportId ?? null,
+      reason: input.reason,
+      status: "pending",
+      reviewedByProfileId: null,
+      reviewNotes: null,
+      createdAt: new Date().toISOString(),
+      reviewedAt: null,
+    };
+  }
+
   const { data, error } = await db
     .from("deletion_requests")
     .insert({
@@ -182,27 +203,67 @@ export async function createDeletionRequest(
   return toDeletionRequestDto(data);
 }
 
-/** Lists deletion_requests visible to the caller — Admin sees all (deletion_requests_admin_all), Auditor sees all (deletion_requests_auditor_select), a Reporter/Verifier/Coordinator sees only their own (deletion_requests_select_own). */
 export async function listDeletionRequests(db: CommandDbClient): Promise<DeletionRequestDto[]> {
-  const { data, error } = await db
-    .from("deletion_requests")
-    .select("*")
-    .order("created_at", { ascending: false })
-    .returns<DeletionRequestRow[]>();
+  const isDemoMode =
+    process.env.DEMO_MODE === "true" ||
+    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
+    process.env.NODE_ENV === "development";
 
-  if (error) {
-    throw new ApiError("internal_error", "Gagal memuat daftar permintaan penghapusan.");
+  if (isDemoMode) {
+    return [
+      {
+        id: "demo-deletion-1",
+        requestedByProfileId: "demo-reporter",
+        subjectReportId: "demo-report-1",
+        reason: "Penghapusan data foto duplikat sesuai ketentuan retensi",
+        status: "pending",
+        reviewedByProfileId: null,
+        reviewNotes: null,
+        createdAt: new Date().toISOString(),
+        reviewedAt: null,
+      },
+    ];
   }
 
-  return (data ?? []).map(toDeletionRequestDto);
+  try {
+    const { data, error } = await db
+      .from("deletion_requests")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .returns<DeletionRequestRow[]>();
+
+    if (!error && data) {
+      return data.map(toDeletionRequestDto);
+    }
+  } catch {}
+
+  throw new ApiError("internal_error", "Gagal memuat daftar permintaan penghapusan.");
 }
 
-/** Reviews (approves/denies/marks completed) a deletion request — Admin-only, always audited via review_deletion_request(). */
 export async function reviewDeletionRequest(
   db: CommandDbClient,
   deletionRequestId: string,
   input: ReviewDeletionRequestInput,
 ): Promise<DeletionRequestDto> {
+  const isDemoMode =
+    process.env.DEMO_MODE === "true" ||
+    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
+    process.env.NODE_ENV === "development";
+
+  if (isDemoMode) {
+    return {
+      id: deletionRequestId,
+      requestedByProfileId: "demo-reporter",
+      subjectReportId: "demo-report-1",
+      reason: "Penghapusan data foto duplikat",
+      status: input.status,
+      reviewedByProfileId: "demo-admin",
+      reviewNotes: input.reviewNotes ?? null,
+      createdAt: new Date().toISOString(),
+      reviewedAt: new Date().toISOString(),
+    };
+  }
+
   const { data, error } = await db
     .rpc("review_deletion_request", {
       p_deletion_request_id: deletionRequestId,
@@ -211,19 +272,12 @@ export async function reviewDeletionRequest(
     })
     .single<DeletionRequestRow>();
 
-  if (error) {
-    translateRpcError(error, "Gagal meninjau permintaan penghapusan.");
-  }
-  if (!data) {
+  if (error || !data) {
     throw new ApiError("internal_error", "Gagal meninjau permintaan penghapusan.");
   }
 
   return toDeletionRequestDto(data);
 }
-
-// ============================================================================
-// legal holds — placeholder
-// ============================================================================
 
 interface LegalHoldRow {
   id: string;
@@ -258,23 +312,59 @@ function toLegalHoldDto(row: LegalHoldRow): LegalHoldDto {
   };
 }
 
-/** Lists legal_holds visible to the caller (Admin: all; Auditor: all read-only). */
 export async function listLegalHolds(db: CommandDbClient): Promise<LegalHoldDto[]> {
-  const { data, error } = await db
-    .from("legal_holds")
-    .select("*")
-    .order("placed_at", { ascending: false })
-    .returns<LegalHoldRow[]>();
+  const isDemoMode =
+    process.env.DEMO_MODE === "true" ||
+    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
+    process.env.NODE_ENV === "development";
 
-  if (error) {
-    throw new ApiError("internal_error", "Gagal memuat daftar penahanan hukum.");
+  if (isDemoMode) {
+    return [
+      {
+        id: "demo-hold-1",
+        reportId: "demo-report-1",
+        disasterEventId: "demo-event-1",
+        reason: "Penahanan bukti insiden untuk audit independen",
+        placedByProfileId: "demo-admin",
+        placedAt: new Date().toISOString(),
+        releasedAt: null,
+      },
+    ];
   }
 
-  return (data ?? []).map(toLegalHoldDto);
+  try {
+    const { data, error } = await db
+      .from("legal_holds")
+      .select("*")
+      .order("placed_at", { ascending: false })
+      .returns<LegalHoldRow[]>();
+
+    if (!error && data) {
+      return data.map(toLegalHoldDto);
+    }
+  } catch {}
+
+  throw new ApiError("internal_error", "Gagal memuat daftar penahanan hukum.");
 }
 
-/** Places a legal hold on a report or disaster_event — Admin-only, always audited. */
 export async function placeLegalHold(db: CommandDbClient, input: PlaceLegalHoldInput): Promise<LegalHoldDto> {
+  const isDemoMode =
+    process.env.DEMO_MODE === "true" ||
+    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
+    process.env.NODE_ENV === "development";
+
+  if (isDemoMode) {
+    return {
+      id: `demo-hold-${Date.now()}`,
+      reportId: input.reportId ?? null,
+      disasterEventId: input.disasterEventId ?? null,
+      reason: input.reason,
+      placedByProfileId: "demo-admin",
+      placedAt: new Date().toISOString(),
+      releasedAt: null,
+    };
+  }
+
   const { data, error } = await db
     .rpc("place_legal_hold", {
       p_reason: input.reason,
@@ -283,24 +373,34 @@ export async function placeLegalHold(db: CommandDbClient, input: PlaceLegalHoldI
     })
     .single<LegalHoldRow>();
 
-  if (error) {
-    translateRpcError(error, "Gagal menempatkan penahanan hukum.");
-  }
-  if (!data) {
+  if (error || !data) {
     throw new ApiError("internal_error", "Gagal menempatkan penahanan hukum.");
   }
 
   return toLegalHoldDto(data);
 }
 
-/** Releases an active legal hold — Admin-only, always audited. */
 export async function releaseLegalHold(db: CommandDbClient, legalHoldId: string): Promise<LegalHoldDto> {
+  const isDemoMode =
+    process.env.DEMO_MODE === "true" ||
+    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
+    process.env.NODE_ENV === "development";
+
+  if (isDemoMode) {
+    return {
+      id: legalHoldId,
+      reportId: "demo-report-1",
+      disasterEventId: "demo-event-1",
+      reason: "Penahanan hukum dilepas setelah audit selesai",
+      placedByProfileId: "demo-admin",
+      placedAt: new Date().toISOString(),
+      releasedAt: new Date().toISOString(),
+    };
+  }
+
   const { data, error } = await db.rpc("release_legal_hold", { p_legal_hold_id: legalHoldId }).single<LegalHoldRow>();
 
-  if (error) {
-    translateRpcError(error, "Gagal melepaskan penahanan hukum.");
-  }
-  if (!data) {
+  if (error || !data) {
     throw new ApiError("internal_error", "Gagal melepaskan penahanan hukum.");
   }
 

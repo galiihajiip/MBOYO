@@ -17,8 +17,8 @@ export interface NotificationListItem {
 export interface NotificationListProps {
   profileId: string;
   initialNotifications: NotificationListItem[];
-  /** The path this role's notifications navigate to on click (e.g. the source report's detail) — resolved per notification.type by the caller. */
-  resolveHref: (notification: NotificationListItem) => string | null;
+  role?: string;
+  resolveHref?: (notification: NotificationListItem) => string | null;
 }
 
 const TYPE_LABELS: Record<string, string> = {
@@ -37,17 +37,21 @@ const LEVEL_LABELS: Record<string, string> = {
   critical: "Kritis",
 };
 
-/**
- * Shared Notifikasi list (BLOCK 25) — used by both /verifier/notifikasi
- * and /command/notifikasi (docs/product/SCREEN_INVENTORY.md's "Shared
- * Notifikasi Pattern"). Server-fetched initial data + a realtime
- * subscription for live updates (this block's "realtime updates"
- * requirement) — a new notification prepends to the list immediately,
- * without a page refresh. Clicking a card marks it read and navigates to
- * the related entity — never exposes a decision action inline, matching
- * NotificationCard's own documented constraint.
- */
-export function NotificationList({ profileId, initialNotifications, resolveHref }: NotificationListProps) {
+function defaultResolveHref(role: string | undefined, notification: NotificationListItem): string | null {
+  if (role === "response_coordinator") {
+    const taskId = notification.payload?.taskId;
+    if (typeof taskId === "string") return `/command/tugas/${taskId}`;
+    return "/command/peta";
+  }
+  if (role === "verifier") {
+    const reportId = notification.payload?.reportId;
+    if (typeof reportId === "string") return `/verifier/laporan/${reportId}`;
+    return "/verifier/antrean";
+  }
+  return null;
+}
+
+export function NotificationList({ profileId, initialNotifications, role, resolveHref }: NotificationListProps) {
   const router = useRouter();
   const [notifications, setNotifications] = useState(initialNotifications);
 
@@ -70,13 +74,9 @@ export function NotificationList({ profileId, initialNotifications, resolveHref 
       setNotifications((current) =>
         current.map((n) => (n.id === notification.id ? { ...n, readAt: new Date().toISOString() } : n)),
       );
-      await fetch(`/api/notifications/${notification.id}/read`, { method: "POST" }).catch(() => {
-        // Best-effort — the local read-state update above already reflects
-        // intent; a failed network call here is not worth surfacing as an
-        // error for a read-state marker.
-      });
+      await fetch(`/api/notifications/${notification.id}/read`, { method: "POST" }).catch(() => {});
     }
-    const href = resolveHref(notification);
+    const href = resolveHref ? resolveHref(notification) : defaultResolveHref(role, notification);
     if (href) router.push(href);
   }
 

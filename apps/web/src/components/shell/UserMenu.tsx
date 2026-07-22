@@ -1,10 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import Link from "next/link";
 import { roleLabels } from "@mboyo/ui";
 import type { Role } from "@mboyo/domain";
-import { signOutAction } from "../../app/(auth)/masuk/actions";
 
 export interface UserMenuProps {
   displayName: string;
@@ -12,8 +12,17 @@ export interface UserMenuProps {
   profileHref: string;
 }
 
-/** Topbar user menu — display name, primary role, link to Profil, and sign-out. */
 export function UserMenu({ displayName, role, profileHref }: UserMenuProps) {
+  const [isSigningOut, setIsSigningOut] = useState(false);
+
+  async function handleSignOut() {
+    setIsSigningOut(true);
+    try {
+      await fetch("/api/auth/signout", { method: "POST" });
+    } catch {}
+    window.location.href = "/masuk";
+  }
+
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild>
@@ -50,14 +59,14 @@ export function UserMenu({ displayName, role, profileHref }: UserMenuProps) {
             </Link>
           </DropdownMenu.Item>
           <DropdownMenu.Item asChild>
-            <form action={signOutAction} className="w-full">
-              <button
-                type="submit"
-                className="flex min-h-11 w-full cursor-pointer items-center rounded-sm px-3 text-left font-sans text-sm text-brand-critical-red outline-none data-[highlighted]:bg-brand-mist"
-              >
-                Keluar
-              </button>
-            </form>
+            <button
+              type="button"
+              onClick={() => void handleSignOut()}
+              disabled={isSigningOut}
+              className="flex min-h-11 w-full cursor-pointer items-center rounded-sm px-3 text-left font-sans text-sm text-brand-critical-red outline-none data-[highlighted]:bg-brand-mist disabled:opacity-50"
+            >
+              {isSigningOut ? "Keluar..." : "Keluar"}
+            </button>
           </DropdownMenu.Item>
         </DropdownMenu.Content>
       </DropdownMenu.Portal>
