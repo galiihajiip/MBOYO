@@ -3,6 +3,8 @@ import { createServerSupabaseClient } from "../../../../lib/supabase/server";
 import { getServiceRoleClient } from "../../../../lib/supabase/service-role.server";
 import { getServerEnv } from "../../../../lib/env.server";
 import { authorizeEvidenceUpload } from "../../../../lib/evidence/authorize";
+import { checkRateLimit } from "../../../../lib/api/rate-limit";
+import { resolveRequestId } from "../../../../lib/api/request-id";
 import { validateUploadFilePresence, validateMagicBytes } from "../../../../lib/evidence/validate-upload";
 import { processEvidenceImage } from "../../../../lib/evidence/process";
 import { computePerceptualHash } from "../../../../lib/evidence/perceptual-hash";
@@ -73,6 +75,7 @@ function errorResponse(error: EvidenceError): NextResponse<EvidenceErrorResponse
  * photo, which the Reporter can see and understand from Antrean Offline.
  */
 export async function POST(request: NextRequest): Promise<NextResponse> {
+  const requestId = resolveRequestId(request);
   const supabase = await createServerSupabaseClient();
 
   const formData = await request.formData().catch(() => null);
@@ -89,6 +92,18 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   } catch (error) {
     if (error instanceof EvidenceError) return errorResponse(error);
     throw error;
+  }
+
+  // Keyed on profileId (not IP) — evidence uploads happen from the same
+  // Reporter repeatedly during a single incident, and this app's disaster
+  // scenario means many Reporters can legitimately share one IP/campus
+  // network, so an IP-scoped limit would wrongly throttle unrelated users.
+  const rateLimit = checkRateLimit(
+    { key: "evidence:upload", limit: 20, windowMs: 60_000 },
+    authorized.profileId,
+  );
+  if (!rateLimit.allowed) {
+    return errorResponse(new EvidenceError("rate_limited", EVIDENCE_ERROR_MESSAGES.rate_limited, 429));
   }
 
   let mimeType;
@@ -203,7 +218,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     .limit(1);
 
   if (!existingJobs || existingJobs.length === 0) {
-    await serviceRoleClient.from("analysis_jobs").insert({ report_id: reportId, status: "queued" });
+    await serviceRoleClient
+      .from("analysis_jobs")
+      .insert({ report_id: reportId, status: "queued", request_id: requestId });
     await serviceRoleClient
       .from("reports")
       .update({ status: "analysis_queued" })
