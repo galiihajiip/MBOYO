@@ -1,10 +1,12 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { z } from "zod";
 import type { Role } from "@mboyo/domain";
 import { createServerSupabaseClient } from "../../../lib/supabase/server";
 import { ROLE_HOME_ROUTE } from "../../../lib/auth/route-map";
+import { checkRateLimit } from "../../../lib/api/rate-limit";
 
 const signInSchema = z.object({
   email: z.string().email(),
@@ -34,6 +36,20 @@ export async function signInAction(_prevState: SignInState, formData: FormData):
 
   if (!parsed.success) {
     return { error: "Email atau kata sandi tidak valid." };
+  }
+
+  // Keyed on (email, IP) together: throttles repeated attempts against one
+  // account from one source without locking out an entire shared network
+  // (common at a disaster response site) the moment any single user on it
+  // mistypes a password a few times.
+  const requestHeaders = await headers();
+  const clientIp = requestHeaders.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  const rateLimit = checkRateLimit(
+    { key: "login", limit: 10, windowMs: 60_000 },
+    `${parsed.data.email.toLowerCase()}:${clientIp}`,
+  );
+  if (!rateLimit.allowed) {
+    return { error: "Terlalu banyak percobaan masuk. Coba lagi sebentar lagi." };
   }
 
   const supabase = await createServerSupabaseClient();
