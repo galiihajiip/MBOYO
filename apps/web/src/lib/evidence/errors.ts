@@ -36,5 +36,6 @@ export const EVIDENCE_ERROR_MESSAGES: Record<EvidenceErrorCode, string> = {
   decode_failed: "Berkas foto rusak atau tidak dapat dibaca.",
   storage_upload_failed: "Gagal menyimpan foto. Silakan coba lagi.",
   metadata_persist_failed: "Gagal menyimpan data foto. Silakan coba lagi.",
+  rate_limited: "Terlalu banyak unggahan. Coba lagi sebentar lagi.",
   internal_error: "Terjadi kesalahan pada server. Silakan coba lagi.",
 };
