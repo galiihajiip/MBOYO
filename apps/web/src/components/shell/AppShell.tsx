@@ -5,6 +5,7 @@ import { SidebarNav } from "./SidebarNav";
 import { TabletRailNav } from "./TabletRailNav";
 import { MobileBottomNav } from "./MobileBottomNav";
 import { Breadcrumbs, type BreadcrumbItem } from "./Breadcrumbs";
+import { ConsentGate } from "./ConsentGate";
 import { ROLE_NAV_ITEMS } from "../../lib/navigation/nav-items";
 
 const ROLES_WITH_NOTIFICATIONS: Partial<Record<Role, string>> = {
@@ -54,6 +55,7 @@ export function AppShell({ role, displayName, breadcrumbs, children }: AppShellP
 
   return (
     <div className="flex min-h-screen flex-col">
+      <ConsentGate />
       <Topbar
         displayName={displayName}
         role={role}
