@@ -2,18 +2,16 @@ import type { Metadata } from "next";
 import { PublicHeader } from "../components/marketing/PublicHeader";
 import { PublicFooter } from "../components/marketing/PublicFooter";
 import { Hero } from "../components/marketing/Hero";
+import { TechPartnersBar } from "../components/marketing/sections/TechPartnersBar";
 import { ProblemSection } from "../components/marketing/sections/ProblemSection";
 import { SolutionSection } from "../components/marketing/sections/SolutionSection";
 import { FlowSection } from "../components/marketing/sections/FlowSection";
 import { RoleSeparationSection } from "../components/marketing/sections/RoleSeparationSection";
-import { OfflineProofSection } from "../components/marketing/sections/OfflineProofSection";
-import { AiHumanSection } from "../components/marketing/sections/AiHumanSection";
-import { GeospatialSection } from "../components/marketing/sections/GeospatialSection";
-import { TechnologySection } from "../components/marketing/sections/TechnologySection";
-import { DataSovereigntySection } from "../components/marketing/sections/DataSovereigntySection";
-import { MetricsSection } from "../components/marketing/sections/MetricsSection";
+import { ArchitectureHub } from "../components/marketing/sections/ArchitectureHub";
+import { TechAndMetricsHub } from "../components/marketing/sections/TechAndMetricsHub";
 import { DemoAccountsSection } from "../components/marketing/sections/DemoAccountsSection";
 import { FaqSection } from "../components/marketing/sections/FaqSection";
+import { CtaBanner } from "../components/marketing/sections/CtaBanner";
 
 export const metadata: Metadata = {
   title: "MBOYO — Laporan Tetap Jalan. Respons Lebih Tepat.",
@@ -26,20 +24,18 @@ export default function HomePage() {
   return (
     <>
       <PublicHeader />
-      <main>
+      <main className="overflow-x-hidden bg-surface">
         <Hero />
+        <TechPartnersBar />
         <ProblemSection />
         <SolutionSection />
         <FlowSection />
         <RoleSeparationSection />
-        <OfflineProofSection />
-        <AiHumanSection />
-        <GeospatialSection />
-        <TechnologySection />
-        <DataSovereigntySection />
-        <MetricsSection />
+        <ArchitectureHub />
+        <TechAndMetricsHub />
         <DemoAccountsSection />
         <FaqSection />
+        <CtaBanner />
       </main>
       <PublicFooter />
     </>

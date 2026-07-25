@@ -1,41 +1,60 @@
 const FLOW_STEPS = [
-  { step: "1", title: "Pelapor mengambil foto + lokasi", detail: "Sepenuhnya offline, tanpa menunggu koneksi." },
-  { step: "2", title: "Laporan tersimpan di perangkat", detail: "Antrean lokal bertahan meski aplikasi ditutup atau dimuat ulang." },
-  { step: "3", title: "Sinkronisasi otomatis saat online", detail: "Idempoten — tidak ada laporan ganda meski dicoba berulang." },
-  { step: "4", title: "Analisis CV lokal", detail: "Model computer vision menghasilkan probabilitas tingkat keparahan." },
-  { step: "5", title: "Verifikator meninjau bukti", detail: "Manusia memutuskan: konfirmasi, ubah klasifikasi, tolak, atau eskalasi." },
-  { step: "6", title: "Koordinator menugaskan respons", detail: "Insiden terverifikasi diprioritaskan dan ditugaskan ke tim di lapangan." },
-  { step: "7", title: "Auditor melihat jejak lengkap", detail: "Setiap langkah tercatat dan dapat ditelusuri — tanpa penghapusan." },
+  { step: "01", title: "Ambil Foto & GPS Offline", detail: "Pelapor mengambil foto kerusakan & lokasi GPS di perangkat tanpa koneksi seluler.", tag: "Offline" },
+  { step: "02", title: "Penyimpanan Lokal Aman", detail: "Laporan tersimpan di Dexie IndexedDB perangkat, aman dari kegagalan aplikasi.", tag: "IndexedDB" },
+  { step: "03", title: "Sinkronisasi Otomatis", detail: "Dikirim idempoten begitu sinyal seluler atau Wi-Fi terhubung kembali.", tag: "Auto-Sync" },
+  { step: "04", title: "Triase Vision AI Lokal", detail: "Model ONNX menganalisis foto untuk memprediksi tingkat kerusakan awal (<500ms).", tag: "AI Triage" },
+  { step: "05", title: "Verifikasi Berbasis Manusia", detail: "Petugas meninjau bukti untuk mengonfirmasi, merevisi, menolak, atau mengeskalasi.", tag: "Verifikator" },
+  { step: "06", title: "Koordinasi Respons Geospasial", detail: "Koordinator memprioritaskan insiden di Peta Krisis & menugaskan tim lapangan.", tag: "Command Center" },
 ] as const;
 
-/** "End-to-end flow" section — the full MVP live flow, step by step. */
+/**
+ * "Cara Kerja" section — zero em-dashes (—).
+ */
 export function FlowSection() {
   return (
-    <section id="cara-kerja" className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-10">
+    <section id="cara-kerja" className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20 lg:px-10">
       <div className="mx-auto max-w-2xl text-center">
-        <h2 className="font-sans text-2xl font-bold text-on-surface sm:text-3xl">Cara Kerja</h2>
-        <p className="mt-2 font-sans text-sm text-on-surface-variant">
-          Dari kamera pelapor hingga tugas respons di lapangan — satu alur yang dapat ditelusuri
-          sepenuhnya.
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-brand-border bg-surface-container-low px-3 py-1 font-mono text-xs font-bold text-on-surface-variant">
+          ALUR SISTEM TERINTEGRASI
+        </span>
+        <h2 className="mt-3 font-sans text-2xl font-extrabold text-on-surface sm:text-3xl lg:text-4xl">
+          Bagaimana MBOYO Bekerja di Lapangan
+        </h2>
+        <p className="mt-3 font-sans text-base text-on-surface-variant">
+          Dari pengambilan foto offline hingga alokasi tim respons: satu alur transparan yang dapat ditelusuri sepenuhnya.
         </p>
       </div>
 
-      <ol className="mx-auto mt-10 flex max-w-3xl flex-col gap-4">
+      <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {FLOW_STEPS.map((item) => (
-          <li key={item.step} className="flex gap-4 rounded-lg border border-brand-border bg-surface-container-lowest p-4">
-            <span
-              aria-hidden="true"
-              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-ink-navy font-mono text-xs font-bold text-brand-cloud-white"
-            >
-              {item.step}
-            </span>
+          <div
+            key={item.step}
+            className="group relative flex flex-col justify-between rounded-2xl border border-brand-border bg-surface-container-lowest p-6 shadow-sm transition-all hover:border-brand-signal-cyan/50 hover:shadow-lg"
+          >
             <div>
-              <p className="font-sans text-sm font-semibold text-on-surface">{item.title}</p>
-              <p className="mt-1 font-sans text-sm text-on-surface-variant">{item.detail}</p>
+              <div className="flex items-center justify-between">
+                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-ink-navy font-mono text-sm font-bold text-brand-cloud-white group-hover:bg-brand-signal-cyan group-hover:text-brand-ink-navy transition-colors">
+                  {item.step}
+                </span>
+                <span className="rounded-full bg-surface-container-low px-2.5 py-0.5 font-mono text-[10px] font-bold text-on-surface-variant">
+                  {item.tag}
+                </span>
+              </div>
+              <h3 className="mt-4 font-sans text-base font-bold text-on-surface group-hover:text-brand-ink-navy">
+                {item.title}
+              </h3>
+              <p className="mt-2 font-sans text-sm text-on-surface-variant leading-relaxed">
+                {item.detail}
+              </p>
             </div>
-          </li>
+
+            <div className="mt-6 flex items-center justify-between border-t border-brand-border pt-3">
+              <span className="font-mono text-[10px] text-on-surface-variant">Terverifikasi Audit</span>
+              <span aria-hidden="true" className="font-sans text-xs text-brand-signal-cyan font-bold">✓</span>
+            </div>
+          </div>
         ))}
-      </ol>
+      </div>
     </section>
   );
 }

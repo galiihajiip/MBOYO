@@ -2,3 +2,8 @@
 
 @source "../../src";
 @source "../../../../packages/ui/src";
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}

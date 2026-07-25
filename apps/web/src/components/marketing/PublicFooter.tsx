@@ -27,9 +27,7 @@ const FOOTER_COLUMNS: FooterColumn[] = [
     heading: "Teknologi",
     links: [
       { href: "#teknologi", label: "Arsitektur & Stack" },
-      { href: "#offline-proof", label: "Bukti Offline-First" },
-      { href: "#ai-manusia", label: "AI + Verifikasi Manusia" },
-      { href: "#koordinasi-geospasial", label: "Koordinasi Geospasial" },
+      { href: "#keamanan-data", label: "Keamanan Data" },
     ],
   },
   {
@@ -44,12 +42,7 @@ const FOOTER_COLUMNS: FooterColumn[] = [
 ];
 
 /**
- * Public marketing footer — per this block's spec: product, navigation,
- * technology, privacy, methodology, accessibility, status, team
- * attribution. Status is a distinct link (service-health page is out of
- * scope for this block; links to the closest existing concept —
- * documented System Administrator health visibility — until a public
- * status page exists) rather than fabricated.
+ * Public marketing footer — zero em-dashes (—).
  */
 export function PublicFooter() {
   return (
@@ -66,7 +59,7 @@ export function PublicFooter() {
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className="font-sans text-sm text-on-surface hover:text-brand-signal-cyan"
+                      className="font-sans text-sm text-on-surface hover:text-brand-signal-cyan transition-colors"
                     >
                       {link.label}
                     </Link>
@@ -81,7 +74,7 @@ export function PublicFooter() {
               Status
             </h3>
             <p className="font-sans text-sm text-on-surface-variant">
-              Status layanan publik belum tersedia — kesehatan sistem saat ini dipantau secara
+              Status layanan publik belum tersedia: kesehatan sistem saat ini dipantau secara
               internal oleh Administrator Sistem.
             </p>
           </div>
@@ -89,7 +82,7 @@ export function PublicFooter() {
 
         <div className="mt-10 flex flex-col gap-2 border-t border-brand-border pt-6 sm:flex-row sm:items-center sm:justify-between">
           <p className="font-sans text-xs text-on-surface-variant">
-            MBOYO — dikembangkan untuk PIDI Digdaya × Hackathon Bank Indonesia 2026.
+            MBOYO: dikembangkan untuk PIDI Digdaya × Hackathon Bank Indonesia 2026.
           </p>
           <p className="font-mono text-xs text-on-surface-variant">
             &copy; {new Date().getFullYear()} Tim MBOYO

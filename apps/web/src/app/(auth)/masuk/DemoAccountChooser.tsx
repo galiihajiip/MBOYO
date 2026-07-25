@@ -1,21 +1,11 @@
 "use client";
 
-/**
- * Demo account chooser — renders ONLY when NEXT_PUBLIC_DEMO_MODE is true,
- * per this block's "demo chooser only in demo mode" requirement and
- * AGENTS.md's demo-fallback disclosure rule (visibly labeled, never the
- * default in any environment other than an explicitly configured demo
- * deployment). Selecting an account fills the form fields; it does not
- * submit or bypass the real signInWithPassword() server action — the demo
- * account still authenticates through the exact same path a real account would.
- */
-
 const DEMO_ACCOUNTS = [
-  { label: "Pelapor (Reporter)", email: "reporter@mboyo.demo" },
-  { label: "Verifikator (Verifier)", email: "verifier@mboyo.demo" },
-  { label: "Koordinator Respons (Coordinator)", email: "coordinator@mboyo.demo" },
-  { label: "Administrator Sistem (Admin)", email: "admin@mboyo.demo" },
-  { label: "Auditor", email: "auditor@mboyo.demo" },
+  { role: "Pelapor Warga", email: "reporter@mboyo.demo", badgeColor: "bg-brand-signal-cyan/10 text-brand-signal-cyan border-brand-signal-cyan/30" },
+  { role: "Petugas Verifikator", email: "verifier@mboyo.demo", badgeColor: "bg-brand-relief-teal/10 text-brand-relief-teal border-brand-relief-teal/30" },
+  { role: "Koordinator Respons", email: "coordinator@mboyo.demo", badgeColor: "bg-brand-priority-orange/10 text-brand-priority-orange border-brand-priority-orange/30" },
+  { role: "Administrator Sistem", email: "admin@mboyo.demo", badgeColor: "bg-brand-critical-red/10 text-brand-critical-red border-brand-critical-red/30" },
+  { role: "Auditor Independen", email: "auditor@mboyo.demo", badgeColor: "bg-brand-slate/10 text-brand-slate border-brand-slate/30" },
 ] as const;
 
 const DEMO_PASSWORD = "DemoMboyo2026!";
@@ -29,20 +19,28 @@ export function DemoAccountChooser({ demoMode, onSelect }: DemoAccountChooserPro
   if (!demoMode) return null;
 
   return (
-    <div className="mt-6 rounded-md border border-brand-caution-amber/40 bg-brand-caution-amber/10 p-4">
-      <p className="font-sans text-xs font-bold uppercase tracking-wide text-[#7a5109]">
-        Mode Demo Aktif — akun di bawah ini hanya untuk demonstrasi
-      </p>
+    <div className="mt-4 rounded-2xl border border-brand-caution-amber/40 bg-brand-caution-amber/5 p-4 shadow-sm">
+      <div className="flex items-center justify-between border-b border-brand-caution-amber/20 pb-2">
+        <span className="font-mono text-xs font-bold uppercase tracking-wider text-[#7a5109]">
+          Pilihan Akun Demo Instan
+        </span>
+        <span className="font-mono text-[10px] font-semibold text-[#7a5109]">
+          Klik untuk Isi Otomatis
+        </span>
+      </div>
+
       <div className="mt-3 flex flex-col gap-2">
         {DEMO_ACCOUNTS.map((account) => (
           <button
             key={account.email}
             type="button"
             onClick={() => onSelect(account.email, DEMO_PASSWORD)}
-            className="flex min-h-11 items-center justify-between rounded-sm border border-brand-border bg-surface-container-lowest px-3 text-left font-sans text-sm text-on-surface hover:bg-brand-mist"
+            className="flex min-h-11 items-center justify-between rounded-xl border border-brand-border bg-surface-container-lowest px-3 text-left font-sans text-xs text-on-surface transition-all hover:border-brand-signal-cyan hover:bg-brand-mist/50"
           >
-            <span>{account.label}</span>
-            <span className="font-mono text-xs text-on-surface-variant">{account.email}</span>
+            <span className="font-bold">{account.role}</span>
+            <span className={`rounded-md border px-2 py-0.5 font-mono text-[10px] font-semibold ${account.badgeColor}`}>
+              {account.email}
+            </span>
           </button>
         ))}
       </div>
