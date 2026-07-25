@@ -8,52 +8,60 @@ const FLOW_STEPS = [
 ] as const;
 
 /**
- * "Cara Kerja" section — zero em-dashes (—).
+ * "Cara Kerja" section — Dark Navy Brand Gradient section with glowing 3D cards.
  */
 export function FlowSection() {
   return (
-    <section id="cara-kerja" className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20 lg:px-10">
-      <div className="mx-auto max-w-2xl text-center">
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-brand-border bg-surface-container-low px-3 py-1 font-mono text-xs font-bold text-on-surface-variant">
-          ALUR SISTEM TERINTEGRASI
-        </span>
-        <h2 className="mt-3 font-sans text-2xl font-extrabold text-on-surface sm:text-3xl lg:text-4xl">
-          Bagaimana MBOYO Bekerja di Lapangan
-        </h2>
-        <p className="mt-3 font-sans text-base text-on-surface-variant">
-          Dari pengambilan foto offline hingga alokasi tim respons: satu alur transparan yang dapat ditelusuri sepenuhnya.
-        </p>
-      </div>
+    <section id="cara-kerja" className="relative overflow-hidden bg-gradient-to-br from-[#06141f] via-[#082032] to-[#0b3a53] py-16 text-white sm:py-24">
+      {/* Ambient background glow */}
+      <div
+        className="pointer-events-none absolute -left-20 top-1/2 h-96 w-96 rounded-full bg-brand-signal-cyan/15 blur-3xl"
+        aria-hidden="true"
+      />
 
-      <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {FLOW_STEPS.map((item) => (
-          <div
-            key={item.step}
-            className="group relative flex flex-col justify-between rounded-2xl border border-brand-border bg-surface-container-lowest p-6 shadow-sm transition-all hover:border-brand-signal-cyan/50 hover:shadow-lg"
-          >
-            <div>
-              <div className="flex items-center justify-between">
-                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-ink-navy font-mono text-sm font-bold text-brand-cloud-white group-hover:bg-brand-signal-cyan group-hover:text-brand-ink-navy transition-colors">
-                  {item.step}
-                </span>
-                <span className="rounded-full bg-surface-container-low px-2.5 py-0.5 font-mono text-[10px] font-bold text-on-surface-variant">
-                  {item.tag}
-                </span>
+      <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-10">
+        <div className="mx-auto max-w-2xl text-center">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-brand-signal-cyan/40 bg-brand-signal-cyan/10 px-3.5 py-1 font-mono text-xs font-bold text-brand-signal-cyan">
+            ALUR SISTEM TERINTEGRASI
+          </span>
+          <h2 className="mt-3 font-sans text-2xl font-extrabold text-white sm:text-3xl lg:text-4xl">
+            Bagaimana MBOYO Bekerja di Lapangan
+          </h2>
+          <p className="mt-3 font-sans text-base text-slate-300">
+            Dari pengambilan foto offline hingga alokasi tim respons: satu alur transparan yang dapat ditelusuri fully.
+          </p>
+        </div>
+
+        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {FLOW_STEPS.map((item) => (
+            <div
+              key={item.step}
+              className="group relative flex flex-col justify-between rounded-3xl border border-white/15 bg-white/5 p-6 shadow-2xl backdrop-blur-md transition-all duration-300 hover:-translate-y-2 hover:border-brand-signal-cyan/60 hover:bg-white/10"
+            >
+              <div>
+                <div className="flex items-center justify-between">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-signal-cyan/20 border border-brand-signal-cyan/40 font-mono text-sm font-bold text-brand-signal-cyan group-hover:bg-brand-signal-cyan group-hover:text-brand-ink-navy transition-colors">
+                    {item.step}
+                  </span>
+                  <span className="rounded-full border border-white/20 bg-white/10 px-2.5 py-0.5 font-mono text-[10px] font-bold text-slate-300">
+                    {item.tag}
+                  </span>
+                </div>
+                <h3 className="mt-4 font-sans text-base font-bold text-white group-hover:text-brand-signal-cyan transition-colors">
+                  {item.title}
+                </h3>
+                <p className="mt-2 font-sans text-xs leading-relaxed text-slate-300">
+                  {item.detail}
+                </p>
               </div>
-              <h3 className="mt-4 font-sans text-base font-bold text-on-surface group-hover:text-brand-ink-navy">
-                {item.title}
-              </h3>
-              <p className="mt-2 font-sans text-sm text-on-surface-variant leading-relaxed">
-                {item.detail}
-              </p>
-            </div>
 
-            <div className="mt-6 flex items-center justify-between border-t border-brand-border pt-3">
-              <span className="font-mono text-[10px] text-on-surface-variant">Terverifikasi Audit</span>
-              <span aria-hidden="true" className="font-sans text-xs text-brand-signal-cyan font-bold">✓</span>
+              <div className="mt-6 flex items-center justify-between border-t border-white/10 pt-3">
+                <span className="font-mono text-[10px] text-slate-400">Terverifikasi Audit</span>
+                <span aria-hidden="true" className="font-sans text-xs text-brand-signal-cyan font-bold">✓</span>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </section>
   );
