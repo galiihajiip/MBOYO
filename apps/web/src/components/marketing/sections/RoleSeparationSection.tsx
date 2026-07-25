@@ -4,7 +4,7 @@ const ROLES_3D = [
   {
     role: "Pelapor (Reporter)",
     badge: "Public / Citizen",
-    badgeColor: "border-brand-signal-cyan/40 bg-brand-signal-cyan/10 text-brand-signal-cyan",
+    badgeColor: "border-brand-signal-cyan/50 bg-brand-signal-cyan/15 text-cyan-900 font-bold",
     accentColor: "from-brand-signal-cyan via-teal-400 to-emerald-400",
     desc: "Merekam laporan insiden & bukti foto secara offline. Tidak dapat melihat data pelapor lain.",
     scope: "Hanya Laporan Sendiri",
@@ -12,7 +12,7 @@ const ROLES_3D = [
   {
     role: "Verifikator (Verifier)",
     badge: "Official Field Staff",
-    badgeColor: "border-brand-relief-teal/40 bg-brand-relief-teal/10 text-brand-relief-teal",
+    badgeColor: "border-teal-500/50 bg-teal-500/15 text-teal-900 font-bold",
     accentColor: "from-brand-relief-teal via-cyan-500 to-blue-500",
     desc: "Meninjau laporan mentah, memvalidasi sinyal AI, dan mengonfirmasi tingkat kerusakan.",
     scope: "Antrean Verifikasi Wilayah",
@@ -20,7 +20,7 @@ const ROLES_3D = [
   {
     role: "Koordinator Respons",
     badge: "Command Center Ops",
-    badgeColor: "border-brand-priority-orange/40 bg-brand-priority-orange/10 text-brand-priority-orange",
+    badgeColor: "border-brand-caution-amber/50 bg-brand-caution-amber/20 text-[#7a5109] font-bold",
     accentColor: "from-brand-priority-orange via-amber-500 to-yellow-500",
     desc: "Mengelola Peta Krisis Geospasial, mengelompokkan insiden PostGIS, dan menugaskan tim lapangan.",
     scope: "Command Center Geospasial",
@@ -28,7 +28,7 @@ const ROLES_3D = [
   {
     role: "Administrator Sistem",
     badge: "System Admin",
-    badgeColor: "border-brand-critical-red/40 bg-brand-critical-red/10 text-brand-critical-red",
+    badgeColor: "border-rose-500/50 bg-rose-500/15 text-rose-900 font-bold",
     accentColor: "from-brand-critical-red via-rose-500 to-pink-500",
     desc: "Mengonfigurasi ambang batas AI, kebijakan retensi bukti mentah, dan manajemen pengguna.",
     scope: "Manajemen Platform & Config",
@@ -36,15 +36,15 @@ const ROLES_3D = [
   {
     role: "Auditor Independen",
     badge: "Independent Auditor",
-    badgeColor: "border-brand-slate/40 bg-brand-slate/10 text-brand-slate",
-    accentColor: "from-slate-400 via-slate-500 to-slate-600",
+    badgeColor: "border-emerald-600/50 bg-emerald-500/15 text-emerald-950 font-bold",
+    accentColor: "from-emerald-500 via-teal-600 to-slate-700",
     desc: "Mengakses jejak audit yang tidak dapat diubah (append-only) untuk transparansi publik.",
     scope: "Akses Read-Only Audit Trail",
   },
 ];
 
 /**
- * 3D Role Separation Architecture Showcase — Zero em-dashes (—).
+ * 3D Role Separation Architecture Showcase — High contrast badges for Verifikator and Auditor.
  */
 export function RoleSeparationSection() {
   return (
@@ -81,20 +81,20 @@ export function RoleSeparationSection() {
                   <span className={`inline-flex rounded-full border px-2.5 py-0.5 font-mono text-[10px] font-bold ${item.badgeColor}`}>
                     {item.badge}
                   </span>
-                  <span className="font-mono text-xs font-bold text-slate-400">RLS Active</span>
+                  <span className="font-mono text-xs font-bold text-slate-500">RLS Active</span>
                 </div>
 
                 <h3 className="mt-4 font-sans text-lg font-extrabold text-on-surface group-hover:text-brand-signal-cyan transition-colors">
                   {item.role}
                 </h3>
 
-                <p className="mt-2.5 font-sans text-xs leading-relaxed text-on-surface-variant">
-                  {item.detail || item.desc}
+                <p className="mt-2.5 font-sans text-xs leading-relaxed text-on-surface-variant font-medium">
+                  {item.desc}
                 </p>
               </div>
 
               <div className="mt-6 flex items-center justify-between border-t border-brand-border/60 pt-3">
-                <span className="font-mono text-[10px] font-semibold text-slate-400">Scope Otorisasi:</span>
+                <span className="font-mono text-[10px] font-semibold text-slate-500">Scope Otorisasi:</span>
                 <span className="font-mono text-[11px] font-bold text-on-surface">{item.scope}</span>
               </div>
             </div>

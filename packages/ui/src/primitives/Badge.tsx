@@ -3,21 +3,19 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../lib/cn";
 
 /**
- * Generic pill badge — the base every semantic badge (SeverityBadge,
- * StatusBadge, RoleBadge) builds on, per docs/design/DESIGN_SYSTEM_SPEC.md
- * "Status & Severity Badges" (fully rounded pill shape).
+ * Generic pill badge — vibrant high-contrast colors readable on both dark & light backgrounds.
  */
 const badgeVariants = cva(
-  "inline-flex items-center gap-1.5 rounded-full px-3 py-1 font-sans text-sm font-semibold",
+  "inline-flex items-center gap-1.5 rounded-full px-3 py-1 font-sans text-xs font-bold border tracking-wide shadow-sm",
   {
     variants: {
       tone: {
-        neutral: "bg-brand-mist text-brand-slate",
-        info: "bg-brand-signal-cyan/15 text-brand-deep-ocean",
-        success: "bg-brand-safe-green/15 text-[#1c7a48]",
-        warning: "bg-brand-caution-amber/20 text-[#7a5109]",
-        priority: "bg-brand-priority-orange/15 text-[#b8531f]",
-        critical: "bg-brand-critical-red/15 text-[#9a2626]",
+        neutral: "bg-slate-800/80 text-slate-100 border-slate-600/50",
+        info: "bg-brand-signal-cyan/20 text-brand-signal-cyan border-brand-signal-cyan/40",
+        success: "bg-brand-safe-green/20 text-emerald-300 border-brand-safe-green/40",
+        warning: "bg-brand-caution-amber/20 text-brand-caution-amber border-brand-caution-amber/40",
+        priority: "bg-brand-priority-orange/20 text-orange-300 border-brand-priority-orange/40",
+        critical: "bg-brand-critical-red/20 text-rose-300 border-brand-critical-red/40",
       },
     },
     defaultVariants: {

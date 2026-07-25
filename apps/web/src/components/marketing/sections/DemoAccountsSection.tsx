@@ -9,6 +9,7 @@ const DEMO_ROLES: {
   desc: string;
   dest: string;
   cardStyle: string;
+  emailColor: string;
 }[] = [
   {
     role: "reporter",
@@ -16,7 +17,8 @@ const DEMO_ROLES: {
     email: "reporter@mboyo.demo",
     desc: "Buat laporan kerusakan offline, kelola antrean lokal, dan lihat riwayat laporan.",
     dest: "/reporter",
-    cardStyle: "border-brand-signal-cyan/40 bg-brand-signal-cyan/10",
+    cardStyle: "border-brand-signal-cyan/50 bg-brand-signal-cyan/15",
+    emailColor: "text-brand-signal-cyan",
   },
   {
     role: "verifier",
@@ -24,7 +26,8 @@ const DEMO_ROLES: {
     email: "verifier@mboyo.demo",
     desc: "Tinjau bukti foto, hasil analisis AI, dan ambil keputusan verifikasi resmi.",
     dest: "/verifier",
-    cardStyle: "border-brand-relief-teal/40 bg-brand-relief-teal/10",
+    cardStyle: "border-brand-relief-teal/50 bg-brand-relief-teal/20",
+    emailColor: "text-teal-300",
   },
   {
     role: "response_coordinator",
@@ -32,7 +35,8 @@ const DEMO_ROLES: {
     email: "coordinator@mboyo.demo",
     desc: "Kelola Command Center, peta krisis PostGIS, klaster insiden, & penugasan tim.",
     dest: "/command",
-    cardStyle: "border-brand-caution-amber/40 bg-brand-caution-amber/10",
+    cardStyle: "border-brand-caution-amber/50 bg-brand-caution-amber/20",
+    emailColor: "text-brand-caution-amber",
   },
   {
     role: "system_administrator",
@@ -40,7 +44,8 @@ const DEMO_ROLES: {
     email: "admin@mboyo.demo",
     desc: "Kelola akun pengguna, penetapan peran, kejadian bencana, & kesehatan sistem.",
     dest: "/admin",
-    cardStyle: "border-brand-critical-red/40 bg-brand-critical-red/10",
+    cardStyle: "border-brand-critical-red/50 bg-brand-critical-red/20",
+    emailColor: "text-rose-300",
   },
   {
     role: "auditor",
@@ -48,12 +53,13 @@ const DEMO_ROLES: {
     email: "auditor@mboyo.demo",
     desc: "Akses riwayat audit (audit trail), evaluasi model AI, & ekspor kepatuhan data.",
     dest: "/audit",
-    cardStyle: "border-slate-400/40 bg-slate-500/10",
+    cardStyle: "border-brand-safe-green/50 bg-brand-safe-green/20",
+    emailColor: "text-emerald-300",
   },
 ];
 
 /**
- * "Demo accounts" section — Dark Navy Brand Gradient section with 3D glassmorphic cards.
+ * "Demo accounts" section — Dark Navy Brand Gradient section with ultra high-contrast cards & badges.
  */
 export function DemoAccountsSection() {
   const demoMode =
@@ -63,7 +69,7 @@ export function DemoAccountsSection() {
 
   return (
     <section id="akun-demo" className="relative overflow-hidden bg-gradient-to-b from-[#06141f] via-[#082032] to-[#0b3a53] py-16 text-white sm:py-24">
-      {/* Background Glow */}
+      {/* Background Ambient Glow */}
       <div
         className="pointer-events-none absolute -right-20 top-1/4 h-96 w-96 rounded-full bg-brand-caution-amber/15 blur-3xl"
         aria-hidden="true"
@@ -77,7 +83,7 @@ export function DemoAccountsSection() {
           <h2 className="mt-3 font-sans text-2xl font-extrabold text-white sm:text-3xl lg:text-4xl">
             Coba MBOYO Sesuai Peran Anda
           </h2>
-          <p className="mt-3 font-sans text-base text-slate-300">
+          <p className="mt-3 font-sans text-base text-slate-200">
             Uji seluruh fitur platform dari 5 perspektif peran yang berbeda secara langsung.
           </p>
         </div>
@@ -99,19 +105,19 @@ export function DemoAccountsSection() {
                   <h3 className="mt-4 font-sans text-lg font-bold text-white">
                     {item.name}
                   </h3>
-                  <p className="mt-2 font-sans text-xs text-slate-300 leading-relaxed">
+                  <p className="mt-2 font-sans text-xs text-slate-200 leading-relaxed font-medium">
                     {item.desc}
                   </p>
                 </div>
 
-                <div className="mt-6 flex flex-col gap-3 border-t border-white/10 pt-4">
-                  <div className="flex items-center justify-between font-mono text-xs text-slate-300">
+                <div className="mt-6 flex flex-col gap-3 border-t border-white/15 pt-4">
+                  <div className="flex items-center justify-between font-mono text-xs text-slate-200">
                     <span>Email Demo:</span>
-                    <span className="font-semibold text-brand-signal-cyan">{item.email}</span>
+                    <span className={`font-bold ${item.emailColor}`}>{item.email}</span>
                   </div>
                   <Link
                     href={`/masuk?email=${encodeURIComponent(item.email)}`}
-                    className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-brand-caution-amber px-4 font-sans text-sm font-bold text-brand-ink-navy shadow-md transition-all hover:bg-amber-400"
+                    className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-brand-caution-amber px-4 font-sans text-sm font-extrabold text-brand-ink-navy shadow-md transition-all hover:bg-amber-400"
                   >
                     <span>Masuk Sebagai {item.name}</span>
                     <span aria-hidden="true">&rarr;</span>
