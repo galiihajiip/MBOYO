@@ -150,6 +150,102 @@ export async function getResponseTaskById(db: CommandDbClient, taskId: string): 
   throw new ApiError("not_found", "Tugas respons tidak ditemukan.");
 }
 
+export async function assignResponseTask(
+  db: CommandDbClient,
+  taskId: string,
+  input: { assignedProfileId: string; notes?: string },
+): Promise<TaskAssignmentDto> {
+  const isDemoMode =
+    process.env.DEMO_MODE === "true" ||
+    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
+    process.env.NODE_ENV === "development";
+
+  if (isDemoMode) {
+    return {
+      id: `demo-assignment-${Date.now()}`,
+      taskId,
+      assignedProfileId: input.assignedProfileId,
+      status: "assigned",
+      assignedAt: new Date().toISOString(),
+      notes: input.notes ?? null,
+    };
+  }
+
+  const { data, error } = await db
+    .from("task_assignments")
+    .insert({
+      task_id: taskId,
+      assigned_profile_id: input.assignedProfileId,
+      notes: input.notes ?? null,
+    })
+    .select()
+    .single<TaskAssignmentRow>();
+
+  if (error || !data) {
+    throw new ApiError("internal_error", "Gagal menetapkan tugas respons.");
+  }
+
+  return toTaskAssignmentDto(data);
+}
+
+export async function setResponseTaskPriority(
+  db: CommandDbClient,
+  taskId: string,
+  priority: TaskPriority,
+): Promise<ResponseTaskDto> {
+  const isDemoMode =
+    process.env.DEMO_MODE === "true" ||
+    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
+    process.env.NODE_ENV === "development";
+
+  if (isDemoMode) {
+    const task = await getResponseTaskById(db, taskId);
+    return { ...task, priority };
+  }
+
+  const { data, error } = await db
+    .from("response_tasks")
+    .update({ priority })
+    .eq("id", taskId)
+    .select()
+    .single<ResponseTaskRow>();
+
+  if (error || !data) {
+    throw new ApiError("internal_error", "Gagal memperbarui prioritas tugas.");
+  }
+
+  return toResponseTaskDto(data);
+}
+
+export async function transitionResponseTaskStatus(
+  db: CommandDbClient,
+  taskId: string,
+  status: TaskStatus,
+): Promise<ResponseTaskDto> {
+  const isDemoMode =
+    process.env.DEMO_MODE === "true" ||
+    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
+    process.env.NODE_ENV === "development";
+
+  if (isDemoMode) {
+    const task = await getResponseTaskById(db, taskId);
+    return { ...task, status };
+  }
+
+  const { data, error } = await db
+    .from("response_tasks")
+    .update({ status })
+    .eq("id", taskId)
+    .select()
+    .single<ResponseTaskRow>();
+
+  if (error || !data) {
+    throw new ApiError("internal_error", "Gagal memperbarui status tugas.");
+  }
+
+  return toResponseTaskDto(data);
+}
+
 export async function listTaskAssignments(db: CommandDbClient, taskId: string): Promise<TaskAssignmentDto[]> {
   const isDemoMode =
     process.env.DEMO_MODE === "true" ||
