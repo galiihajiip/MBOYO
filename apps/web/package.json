@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "next build && pnpm build:sw",
-    "build:sw": "tsx scripts/build-sw.ts",
+    "build": "next build && npx tsx scripts/build-sw.ts",
+    "build:sw": "npx tsx scripts/build-sw.ts",
     "start": "next start",
     "lint": "eslint . --max-warnings 0",
     "typecheck": "tsc --noEmit",
