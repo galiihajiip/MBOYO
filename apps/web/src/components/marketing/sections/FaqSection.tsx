@@ -41,8 +41,8 @@ const FAQ_ITEMS = [
 ] as const;
 
 /**
- * Creative & Ultra-Elegant FAQ Section — Asymmetric split layout with dark spotlight sidebar
- * and floating interactive numbered cards. Zero em-dashes (—).
+ * Creative & Ultra-Elegant FAQ Section — Equal height grid alignment so left spotlight card
+ * matches the height of right column cards perfectly down to item 05. Zero em-dashes (—).
  */
 export function FaqSection() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
@@ -53,10 +53,10 @@ export function FaqSection() {
 
   return (
     <section id="faq" className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24 lg:px-10">
-      <div className="grid gap-10 lg:grid-cols-12 lg:items-start">
-        {/* Left Column: Dark Navy Glassmorphism Spotlight Card */}
-        <div className="flex flex-col justify-between rounded-3xl border border-brand-signal-cyan/30 bg-gradient-to-br from-[#06141f] via-[#082032] to-[#0b3a53] p-8 text-white shadow-2xl lg:col-span-5 lg:sticky lg:top-28">
-          <div className="flex flex-col gap-4">
+      <div className="grid gap-8 lg:grid-cols-12 lg:items-stretch">
+        {/* Left Column: Dark Navy Glassmorphism Spotlight Card (Stretches to match height) */}
+        <div className="flex h-full flex-col justify-between rounded-3xl border border-brand-signal-cyan/30 bg-gradient-to-br from-[#06141f] via-[#082032] to-[#0b3a53] p-8 text-white shadow-2xl lg:col-span-5">
+          <div className="flex flex-col gap-5">
             <span className="inline-flex items-center gap-2 rounded-full border border-brand-signal-cyan/40 bg-brand-signal-cyan/10 px-3.5 py-1 font-mono text-xs font-semibold text-brand-signal-cyan self-start">
               PUSAT BANTUAN & JAWABAN
             </span>
@@ -68,6 +68,21 @@ export function FaqSection() {
             <p className="font-sans text-sm text-slate-300 leading-relaxed">
               Pahami bagaimana MBOYO menjaga keandalan laporan offline, privasi data geospasial, dan integrasi AI lokal secara transparan.
             </p>
+
+            <div className="mt-2 flex flex-col gap-2.5 rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
+              <div className="flex items-center gap-2.5 font-sans text-xs font-bold text-white">
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-brand-signal-cyan/20 text-brand-signal-cyan text-[10px]">✓</span>
+                <span>100% Tanpa Ketergantungan Jaringan</span>
+              </div>
+              <div className="flex items-center gap-2.5 font-sans text-xs font-bold text-white">
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-brand-safe-green/20 text-emerald-300 text-[10px]">✓</span>
+                <span>Verifikasi Berbasis Manusia</span>
+              </div>
+              <div className="flex items-center gap-2.5 font-sans text-xs font-bold text-white">
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-brand-caution-amber/20 text-brand-caution-amber text-[10px]">✓</span>
+                <span>Keamanan Data Postgres RLS</span>
+              </div>
+            </div>
           </div>
 
           <div className="mt-8 border-t border-white/10 pt-6">
