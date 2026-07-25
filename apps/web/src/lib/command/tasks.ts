@@ -153,18 +153,20 @@ export async function getResponseTaskById(db: CommandDbClient, taskId: string): 
 export async function assignResponseTask(
   db: CommandDbClient,
   taskId: string,
-  input: { assignedProfileId: string; notes?: string },
+  input: { assigneeProfileId?: string; assignedProfileId?: string; notes?: string },
 ): Promise<TaskAssignmentDto> {
   const isDemoMode =
     process.env.DEMO_MODE === "true" ||
     process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
     process.env.NODE_ENV === "development";
 
+  const targetProfileId = input.assigneeProfileId ?? input.assignedProfileId ?? "";
+
   if (isDemoMode) {
     return {
       id: `demo-assignment-${Date.now()}`,
       taskId,
-      assignedProfileId: input.assignedProfileId,
+      assignedProfileId: targetProfileId,
       status: "assigned",
       assignedAt: new Date().toISOString(),
       notes: input.notes ?? null,
@@ -175,7 +177,7 @@ export async function assignResponseTask(
     .from("task_assignments")
     .insert({
       task_id: taskId,
-      assigned_profile_id: input.assignedProfileId,
+      assigned_profile_id: targetProfileId,
       notes: input.notes ?? null,
     })
     .select()
