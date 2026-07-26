@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { reportListFiltersSchema, paginationRequestSchema } from "@mboyo/domain";
 import { createServerSupabaseClient } from "../../../lib/supabase/server";
 import { listQueueReports } from "../../../lib/reports/service/list";
+import { getVerifierDashboardMetrics } from "../../../lib/reports/service/dashboard";
 import { QueueFilters } from "../../../components/verifier/QueueFilters";
-import { QueueList } from "../../../components/verifier/QueueList";
+import { QueuePageClient } from "../../../components/verifier/QueuePageClient";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Antrean Verifikasi — MBOYO" };
@@ -24,8 +25,9 @@ function first(value: string | string[] | undefined): string | undefined {
  * navigation and re-queries listQueueReports, so the URL is always the
  * single source of truth for "what's currently filtered," making the view
  * bookmarkable/shareable and never out of sync with a client-only filter
- * state. No decision action exists here — per SCREEN_INVENTORY.md, tapping
- * a row navigates to the detail/decision screen; this list is view-only.
+ * state. Selecting a row opens an inline detail/decision panel
+ * (QueuePageClient + QueueDetailPreview) — verifiers can act without
+ * leaving the queue, per the redesigned Antrean Verifikasi mockup.
  */
 export default async function AntreanVerifikasiPage({
   searchParams,
@@ -53,9 +55,20 @@ export default async function AntreanVerifikasiPage({
     pageSize: first(params.pageSize),
   });
 
-  const result = await listQueueReports(supabase, filters, pagination, {
-    baseStatuses: ["analysis_completed", "needs_manual_review"],
-  });
+  const [result, metrics] = await Promise.all([
+    listQueueReports(supabase, filters, pagination, {
+      baseStatuses: ["analysis_completed", "needs_manual_review"],
+    }),
+    getVerifierDashboardMetrics(supabase),
+  ]);
+
+  const confidences = result.items
+    .map((item) => item.topConfidence)
+    .filter((value): value is number => value !== null);
+  const averageConfidencePercent =
+    confidences.length > 0
+      ? Math.round((confidences.reduce((sum, value) => sum + value, 0) / confidences.length) * 100)
+      : null;
 
   return (
     <div className="flex flex-col gap-4">
@@ -66,7 +79,12 @@ export default async function AntreanVerifikasiPage({
         </p>
       </div>
       <QueueFilters />
-      <QueueList reports={result.items} />
+      <QueuePageClient
+        reports={result.items}
+        totalCount={result.totalCount}
+        averageConfidencePercent={averageConfidencePercent}
+        completedTodayCount={metrics.decisionsToday}
+      />
     </div>
   );
 }

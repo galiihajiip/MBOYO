@@ -54,7 +54,7 @@ export default function MethodologyPage() {
       <h2>Kontak</h2>
       <p>
         Untuk pertanyaan metodologi atau permintaan laporan evaluasi lengkap, hubungi tim melalui
-        kanal komunikasi resmi PIDI Digdaya × Hackathon Bank Indonesia 2026.
+        kanal komunikasi resmi VETERAN KUKUS.
       </p>
     </TrustPageLayout>
   );

@@ -8,6 +8,7 @@ import { SolutionSection } from "../components/marketing/sections/SolutionSectio
 import { FlowSection } from "../components/marketing/sections/FlowSection";
 import { RoleSeparationSection } from "../components/marketing/sections/RoleSeparationSection";
 import { ArchitectureHub } from "../components/marketing/sections/ArchitectureHub";
+import { ImpactContextSection } from "../components/marketing/sections/ImpactContextSection";
 import { TechAndMetricsHub } from "../components/marketing/sections/TechAndMetricsHub";
 import { DemoAccountsSection } from "../components/marketing/sections/DemoAccountsSection";
 import { FaqSection } from "../components/marketing/sections/FaqSection";
@@ -32,6 +33,7 @@ export default function HomePage() {
         <FlowSection />
         <RoleSeparationSection />
         <ArchitectureHub />
+        <ImpactContextSection />
         <TechAndMetricsHub />
         <DemoAccountsSection />
         <FaqSection />
