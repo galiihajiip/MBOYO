@@ -109,6 +109,7 @@ export function ReportWizard() {
         totalSteps={totalSteps}
         saveState={saveState}
         title={STEP_TITLES[step]}
+        draft={draft}
         onBack={stepIndex > 0 ? handleBack : undefined}
         onNext={step === "submit" ? undefined : handleNext}
         nextDisabled={!canAdvance(step, draft)}
