@@ -61,7 +61,7 @@ export function PublicHeader() {
             Masuk
           </Link>
           <Link
-            href="/masuk?next=%2Fpelapor%2Flaporan%2Fbaru"
+            href="/masuk?next=%2Freporter%2Flaporan%2Fbaru"
             className="inline-flex min-h-11 items-center rounded-xl bg-brand-ink-navy px-4 font-sans text-sm font-bold text-white shadow-md transition-colors hover:bg-brand-deep-ocean"
           >
             Laporkan Kerusakan

@@ -82,10 +82,10 @@ export function PublicFooter() {
 
         <div className="mt-12 flex flex-col gap-3 border-t border-white/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
           <p className="font-sans text-xs text-slate-400">
-            MBOYO: dikembangkan untuk PIDI Digdaya × Hackathon Bank Indonesia 2026.
+            MBOYO: dikembangkan oleh VETERAN KUKUS.
           </p>
           <p className="font-mono text-xs text-slate-400">
-            &copy; {new Date().getFullYear()} Tim MBOYO. Hak Cipta Dilindungi.
+            &copy; {new Date().getFullYear()} Tim VETERAN KUKUS. Hak Cipta Dilindungi.
           </p>
         </div>
       </div>

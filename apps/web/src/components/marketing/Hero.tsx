@@ -6,10 +6,10 @@ import Link from "next/link";
  */
 export function Hero() {
   const stats = [
-    { value: "100%", label: "Offline-Ready", detail: "Dexie PWA & IndexedDB", color: "text-brand-caution-amber" },
-    { value: "<500ms", label: "Triase AI Lokal", detail: "ONNX MobileNetV3", color: "text-brand-signal-cyan" },
-    { value: "100%", label: "Data Geospasial", detail: "PostGIS Bounds & Geofence", color: "text-brand-safe-green" },
-    { value: "24/7", label: "Auto-Sync Idempoten", detail: "Tanpa Duplikasi Data", color: "text-brand-priority-orange" },
+    { value: "0", label: "Butuh Sinyal", detail: "Foto & lokasi tersimpan di HP dulu", color: "text-brand-caution-amber" },
+    { value: "<1 detik", label: "Cek Kerusakan Otomatis", detail: "AI langsung menilai dari foto", color: "text-brand-signal-cyan" },
+    { value: "1", label: "Peta Terpusat", detail: "Semua laporan terlihat di satu tempat", color: "text-brand-safe-green" },
+    { value: "100%", label: "Dicek Petugas", detail: "Keputusan akhir tetap dari manusia", color: "text-brand-priority-orange" },
   ];
 
   return (
@@ -33,27 +33,28 @@ export function Hero() {
                 <svg className="h-3.5 w-3.5 text-brand-signal-cyan" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                 </svg>
-                PLATFORM TANGGAP BENCANA OFFLINE-FIRST INDONESIA
+                DIBUAT UNTUK SAAT SINYAL HP MATI TOTAL
               </span>
             </div>
 
             <h1 className="font-sans text-3xl font-extrabold leading-tight text-brand-cloud-white sm:text-4xl lg:text-[46px] lg:leading-[56px]">
-              Laporan Tetap Jalan. <br className="hidden sm:inline" />
+              Sinyal Putus, Laporan Bencana <br className="hidden sm:inline" />
               <span className="bg-gradient-to-r from-brand-signal-cyan via-emerald-300 to-brand-caution-amber bg-clip-text text-transparent">
-                Respons Lebih Tepat.
+                Tetap Sampai.
               </span>
             </h1>
 
             <p className="font-sans text-base leading-relaxed text-slate-300 sm:text-lg">
-              MBOYO memungkinkan pelapor mengabadikan foto dan lokasi bencana secara{" "}
-              <strong className="text-white">100% offline</strong>. Laporan otomatis tersimpan di perangkat,
-              dianalisis oleh computer vision lokal untuk triase cepat, serta diverifikasi oleh{" "}
-              <strong className="text-white">manusia</strong> sebelum dikordinasikan dari Command Center geospasial.
+              Saat bencana terjadi, jaringan seluler biasanya ikut rusak duluan, jadi aplikasi lapor yang
+              wajib internet malah gagal di saat paling dibutuhkan. Dengan MBOYO, warga tetap bisa{" "}
+              <strong className="text-white">memotret kerusakan dan menandai lokasi tanpa sinyal sama sekali</strong>.
+              Laporan tersimpan aman di HP, lalu terkirim otomatis begitu jaringan kembali menyala,
+              langsung disaring cepat oleh AI, dan tetap dicek ulang oleh petugas sebelum tim bantuan bergerak.
             </p>
 
             <div className="flex flex-col gap-3.5 sm:flex-row sm:items-center">
               <Link
-                href="/masuk?next=%2Fpelapor%2Flaporan%2Fbaru"
+                href="/masuk?next=%2Freporter%2Flaporan%2Fbaru"
                 className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-brand-caution-amber px-6 font-sans text-base font-bold text-brand-ink-navy shadow-lg shadow-brand-caution-amber/20 transition-all hover:bg-amber-400 hover:shadow-amber-400/30"
               >
                 <span>Buat Laporan Sekarang</span>
@@ -75,7 +76,7 @@ export function Hero() {
                 <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-brand-priority-orange font-mono text-xs font-bold text-white ring-2 ring-brand-ink-navy">A</span>
               </div>
               <span className="font-sans text-xs text-slate-300">
-                <strong className="text-white">5 Peran Terpisah (RLS):</strong> Pelapor, Verifikator, Koordinator, Admin, & Auditor
+                <strong className="text-white">5 Peran, Akses Terpisah:</strong> Pelapor, Verifikator, Koordinator, Admin, & Auditor tidak bisa saling intip data satu sama lain
               </span>
             </div>
           </div>
@@ -111,11 +112,11 @@ export function Hero() {
 
 function HeroPipelineDiagram() {
   const steps = [
-    { label: "Kamera & GPS Offline", desc: "Tersimpan aman di IndexedDB perangkat", tag: "Offline", color: "bg-slate-700 text-slate-200" },
-    { label: "Sinkronisasi Otomatis", desc: "Dikirim idempoten begitu online", tag: "Auto Sync", color: "bg-brand-signal-cyan/20 text-brand-signal-cyan border border-brand-signal-cyan/40" },
-    { label: "Triase Vision AI (ONNX)", desc: "Prediksi tingkat kerusakan & skor kualitas", tag: "<500ms", color: "bg-brand-caution-amber/20 text-brand-caution-amber border border-brand-caution-amber/40" },
-    { label: "Verifikasi Manusia", desc: "Konfirmasi / Koreksi oleh Petugas", tag: "Human-in-Loop", color: "bg-brand-relief-teal/20 text-teal-300 border border-brand-relief-teal/40" },
-    { label: "Command Center Geospasial", desc: "Klaster krisis PostGIS & Penugasan Tim", tag: "Realtime", color: "bg-brand-safe-green/20 text-emerald-300 border border-brand-safe-green/40" },
+    { label: "Foto & Lokasi Tanpa Internet", desc: "Langsung tersimpan aman di HP pelapor", tag: "Offline", color: "bg-slate-700 text-slate-200" },
+    { label: "Terkirim Otomatis", desc: "Begitu sinyal kembali, tanpa laporan ganda", tag: "Auto Sync", color: "bg-brand-signal-cyan/20 text-brand-signal-cyan border border-brand-signal-cyan/40" },
+    { label: "Dicek Cepat oleh AI", desc: "Perkiraan awal tingkat kerusakan & foto valid", tag: "<1 detik", color: "bg-brand-caution-amber/20 text-brand-caution-amber border border-brand-caution-amber/40" },
+    { label: "Dikonfirmasi Petugas", desc: "Manusia yang memutuskan, bukan AI", tag: "Dicek Manusia", color: "bg-brand-relief-teal/20 text-teal-300 border border-brand-relief-teal/40" },
+    { label: "Tim Bantuan Bergerak", desc: "Terlihat di peta, langsung ditugaskan ke lokasi", tag: "Langsung", color: "bg-brand-safe-green/20 text-emerald-300 border border-brand-safe-green/40" },
   ];
 
   return (
@@ -131,7 +132,7 @@ function HeroPipelineDiagram() {
           <span className="h-3 w-3 rounded-full bg-brand-safe-green" />
         </div>
         <span className="font-mono text-xs font-medium text-slate-400">
-          mboyo://pipeline-status
+          Perjalanan Satu Laporan
         </span>
       </div>
 
