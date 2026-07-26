@@ -136,7 +136,7 @@ export function WizardShell({
   hideNext,
 }: WizardShellProps) {
   return (
-    <div className="mx-auto flex max-w-6xl flex-col gap-6 pb-24 sm:pb-6 lg:flex-row lg:items-start">
+    <div className="mx-auto flex max-w-6xl flex-col gap-6 pb-40 sm:pb-6 lg:flex-row lg:items-start">
       <div className="flex-1 rounded-2xl border border-brand-border bg-surface-container-lowest p-5 shadow-sm sm:p-6">
         <div className="flex items-center justify-between gap-3">
           <div>
@@ -160,7 +160,7 @@ export function WizardShell({
 
         <div className="mt-6">{children}</div>
 
-        <div className="fixed inset-x-0 bottom-0 z-30 flex gap-3 border-t border-brand-border bg-surface-container-lowest p-3 sm:static sm:mt-8 sm:justify-between sm:border-0 sm:bg-transparent sm:p-0">
+        <div className="fixed inset-x-0 bottom-[76px] z-30 flex gap-3 border-t border-brand-border bg-surface-container-lowest p-3 sm:static sm:mt-8 sm:justify-between sm:border-0 sm:bg-transparent sm:p-0 lg:bottom-0">
           {onBack ? (
             <Button type="button" variant="ghost" onClick={onBack} className="flex-1 gap-2 sm:flex-none">
               <ArrowLeft className="h-4 w-4" />
