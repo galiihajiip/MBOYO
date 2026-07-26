@@ -16,7 +16,7 @@ interface ModelPredictionRow {
   duplicate_candidate_report_id: string | null;
   is_advisory_only: boolean;
   created_at: string;
-  model_registry_entries: ModelRegistryEntryRow | null;
+  analysis_jobs: { model_registry_entries: ModelRegistryEntryRow | null } | null;
 }
 
 export interface ModelExplanationDto {
@@ -79,6 +79,13 @@ export interface ModelPredictionDto {
  * report still in evidence_uploaded/analysis_queued), which the page
  * renders as an explicit "belum ada hasil analisis" state rather than an
  * error.
+ *
+ * model_predictions has no direct FK to model_registry_entries (it only
+ * has analysis_job_id) — the registry link is one hop further, via
+ * analysis_jobs.model_registry_entry_id — so the embedded select must
+ * traverse analysis_jobs(model_registry_entries(...)); a direct
+ * model_registry_entries(...) embed 400s from PostgREST (PGRST200, no FK
+ * relationship found).
  */
 export async function getLatestModelPrediction(
   db: ReportsDbClient,
@@ -87,7 +94,7 @@ export async function getLatestModelPrediction(
   const { data: prediction, error } = await db
     .from("model_predictions")
     .select(
-      "id, severity_probabilities, quality_score, duplicate_candidate_report_id, is_advisory_only, created_at, model_registry_entries(version, trained_at, promoted_at)",
+      "id, severity_probabilities, quality_score, duplicate_candidate_report_id, is_advisory_only, created_at, analysis_jobs(model_registry_entries(version, trained_at, promoted_at))",
     )
     .eq("report_id", reportId)
     .order("created_at", { ascending: false })
@@ -120,11 +127,11 @@ export async function getLatestModelPrediction(
     isAdvisoryOnly: prediction.is_advisory_only,
     uncertainty: computeUncertainty(prediction.severity_probabilities),
     createdAt: prediction.created_at,
-    model: prediction.model_registry_entries
+    model: prediction.analysis_jobs?.model_registry_entries
       ? {
-          version: prediction.model_registry_entries.version,
-          trainedAt: prediction.model_registry_entries.trained_at,
-          promotedAt: prediction.model_registry_entries.promoted_at,
+          version: prediction.analysis_jobs.model_registry_entries.version,
+          trainedAt: prediction.analysis_jobs.model_registry_entries.trained_at,
+          promotedAt: prediction.analysis_jobs.model_registry_entries.promoted_at,
         }
       : null,
     explanations: (explanationRows ?? []).map((row) => ({

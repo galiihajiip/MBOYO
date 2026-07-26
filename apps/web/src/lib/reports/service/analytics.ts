@@ -50,35 +50,6 @@ function bucketize(values: number[], buckets: { label: string; max: number }[]):
 }
 
 export async function getVerifierAnalytics(db: ReportsDbClient): Promise<VerifierAnalytics> {
-  const isDemoMode =
-    process.env.DEMO_MODE === "true" ||
-    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
-    process.env.NODE_ENV === "development";
-
-  if (isDemoMode) {
-    return {
-      reviewCount: 34,
-      agreementRate: 0.82,
-      overrideRate: 0.18,
-      medianReviewTimeSeconds: 120,
-      medianQueueAgeSeconds: 3600,
-      queueAgeDistribution: [
-        { label: "< 1 jam", count: 8 },
-        { label: "1-6 jam", count: 12 },
-        { label: "6-24 jam", count: 5 },
-        { label: "1-3 hari", count: 2 },
-        { label: "> 3 hari", count: 0 },
-      ],
-      qualityDistribution: [
-        { label: "0.0-0.2", count: 1 },
-        { label: "0.2-0.4", count: 2 },
-        { label: "0.4-0.6", count: 5 },
-        { label: "0.6-0.8", count: 14 },
-        { label: "0.8-1.0", count: 12 },
-      ],
-    };
-  }
-
   try {
     const [reviewResult, queueAgeResult] = await Promise.all([
       db.from("verifier_review_analytics").select("*").returns<ReviewAnalyticsRow[]>(),

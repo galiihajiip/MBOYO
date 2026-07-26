@@ -32,28 +32,6 @@ export interface EvidenceDto {
 }
 
 export async function listReportEvidence(db: ReportsDbClient, reportId: string): Promise<EvidenceDto[]> {
-  const isDemoMode =
-    process.env.DEMO_MODE === "true" ||
-    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
-    process.env.NODE_ENV === "development";
-
-  if (isDemoMode) {
-    return [
-      {
-        id: `demo-evidence-${reportId}`,
-        reportId,
-        mimeType: "image/jpeg",
-        sizeBytes: 1024500,
-        widthPx: 1920,
-        heightPx: 1080,
-        isDuplicateHash: false,
-        uploadedAt: new Date().toISOString(),
-        signedUrl: "https://images.unsplash.com/photo-1590059205670-4f80226a1de1?auto=format&fit=crop&w=1200&q=80",
-        thumbnailSignedUrl: "https://images.unsplash.com/photo-1590059205670-4f80226a1de1?auto=format&fit=crop&w=300&q=80",
-      },
-    ];
-  }
-
   try {
     const { data, error } = await db
       .from("report_evidence")

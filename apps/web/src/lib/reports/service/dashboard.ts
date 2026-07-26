@@ -15,22 +15,6 @@ export interface VerifierDashboardMetrics {
 }
 
 export async function getVerifierDashboardMetrics(db: ReportsDbClient): Promise<VerifierDashboardMetrics> {
-  const isDemoMode =
-    process.env.DEMO_MODE === "true" ||
-    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
-    process.env.NODE_ENV === "development";
-
-  if (isDemoMode) {
-    return {
-      waitingCount: 18,
-      slaWarningCount: 2,
-      lowQualityCount: 3,
-      duplicateCount: 4,
-      highSeverityCount: 7,
-      decisionsToday: 15,
-    };
-  }
-
   const slaCutoff = new Date(Date.now() - SLA_WARNING_HOURS * 60 * 60 * 1000).toISOString();
   const todayStart = new Date();
   todayStart.setUTCHours(0, 0, 0, 0);

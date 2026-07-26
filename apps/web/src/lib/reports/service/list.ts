@@ -18,37 +18,6 @@ export async function listReports(
   pagination: PaginationRequest,
   options: { baseStatuses?: string[] } = {},
 ): Promise<PaginatedResult<ReportSummaryDto>> {
-  const isDemoMode =
-    process.env.DEMO_MODE === "true" ||
-    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
-    process.env.NODE_ENV === "development";
-
-  if (isDemoMode) {
-    const demoItems = [
-      {
-        id: "demo-report-1",
-        disasterEventId: "demo-event-1",
-        clientReportId: "demo-client-1",
-        title: "Laporan Kerusakan Bangunan Sektor Barat",
-        status: "needs_manual_review" as const,
-        submittedAt: new Date().toISOString(),
-        topSeverity: "destroyed" as const,
-        topConfidence: 0.88,
-      },
-      {
-        id: "demo-report-2",
-        disasterEventId: "demo-event-1",
-        clientReportId: "demo-client-2",
-        title: "Kerusakan Atap Gedung Serbaguna",
-        status: "analysis_completed" as const,
-        submittedAt: new Date().toISOString(),
-        topSeverity: "major_damage" as const,
-        topConfidence: 0.75,
-      },
-    ];
-    return buildPaginatedResult(demoItems, demoItems.length, pagination);
-  }
-
   let query = db.from("reports").select("*", { count: "exact" });
   const baseStatuses = options.baseStatuses;
   if (baseStatuses && baseStatuses.length > 0) {
@@ -88,43 +57,6 @@ export async function listQueueReports(
   pagination: PaginationRequest,
   options: { baseStatuses?: string[] } = {},
 ): Promise<PaginatedResult<QueueReportSummaryDto>> {
-  const isDemoMode =
-    process.env.DEMO_MODE === "true" ||
-    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
-    process.env.NODE_ENV === "development";
-
-  if (isDemoMode) {
-    const demoItems = [
-      {
-        id: "demo-report-1",
-        disasterEventId: "demo-event-1",
-        clientReportId: "demo-client-1",
-        title: "Laporan Rumah Roboh Sektor Barat",
-        status: "needs_manual_review" as const,
-        submittedAt: new Date().toISOString(),
-        topSeverity: "destroyed" as const,
-        topConfidence: 0.88,
-        qualityScore: 0.92,
-        duplicateCandidateReportId: null,
-        lastReviewedByVerifierProfileId: null,
-      },
-      {
-        id: "demo-report-2",
-        disasterEventId: "demo-event-1",
-        clientReportId: "demo-client-2",
-        title: "Retakan Dinding Gedung Utama",
-        status: "analysis_completed" as const,
-        submittedAt: new Date().toISOString(),
-        topSeverity: "major_damage" as const,
-        topConfidence: 0.75,
-        qualityScore: 0.85,
-        duplicateCandidateReportId: "demo-report-1",
-        lastReviewedByVerifierProfileId: null,
-      },
-    ];
-    return buildPaginatedResult(demoItems, demoItems.length, pagination);
-  }
-
   let query = db.from("verifier_report_queue").select("*", { count: "exact" });
   const baseStatuses = options.baseStatuses;
   if (baseStatuses && baseStatuses.length > 0) {
