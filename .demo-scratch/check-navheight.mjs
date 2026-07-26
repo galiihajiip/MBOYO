@@ -1,0 +1,12 @@
+import { chromium } from "playwright";
+const browser = await chromium.launch({ headless: true });
+const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+await page.goto("http://localhost:3000/masuk", { waitUntil: "domcontentloaded" });
+await page.waitForSelector("text=Pilihan Akun Demo Instan", { timeout: 15000 });
+await page.click('button:has-text("reporter@mboyo.demo")');
+await page.click('button[type="submit"]');
+await page.waitForURL(/reporter/, { timeout: 20000 });
+await page.waitForTimeout(500);
+const nav = page.locator('nav[aria-label="Navigasi utama (seluler)"]');
+console.log("MobileBottomNav box:", await nav.boundingBox());
+await browser.close();
