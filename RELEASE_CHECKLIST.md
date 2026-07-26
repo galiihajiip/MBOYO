@@ -1,7 +1,7 @@
 # MBOYO — Capstone Release Gate Checklist
 
 > **Target Release Tag:** `v1.0.0-capstone`  
-> **Release Target:** PIDI Digdaya × Hackathon Bank Indonesia 2026
+> **Release Target:** VETERAN KUKUS × Hackathon Bank Indonesia 2026
 
 ---
 

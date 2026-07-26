@@ -2,7 +2,7 @@
 
 > **Release Version:** `v1.0.0-capstone`  
 > **Release Date:** 2026-07-22  
-> **Target:** PIDI Digdaya × Hackathon Bank Indonesia 2026 Capstone Presentation
+> **Target:** VETERAN KUKUS × Hackathon Bank Indonesia 2026 Capstone Presentation
 
 ---
 
