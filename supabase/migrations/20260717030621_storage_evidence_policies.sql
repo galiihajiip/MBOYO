@@ -67,9 +67,16 @@ create policy report_evidence_bucket_auditor_select on storage.objects
 -- evidence route), which Supabase Storage implements as insert-with-
 -- overwrite under the same insert policy above, not a separate update path.
 
-comment on policy report_evidence_bucket_reporter_insert_own on storage.objects is
-  'Reporter may upload evidence only under the path prefix of a report they own — path segment 1 is the report_id.';
-comment on policy report_evidence_bucket_verifier_select on storage.objects is
-  'Verifier may read any evidence object in this bucket, matching report_evidence table SELECT policy.';
-comment on policy report_evidence_bucket_coordinator_select_verified on storage.objects is
-  'Coordinator may read evidence only for reports already verified, matching report_evidence table SELECT policy.';
+-- `comment on policy ... on storage.objects` statements were removed here:
+-- Supabase Cloud's migration role doesn't own storage.objects (it's owned
+-- by supabase_storage_admin), so COMMENT ON POLICY fails with "must be
+-- owner of relation objects". These were documentation-only (no RLS/access
+-- effect) — see the policy definitions above for the same information.
+-- report_evidence_bucket_reporter_insert_own: Reporter may upload evidence
+--   only under the path prefix of a report they own — path segment 1 is
+--   the report_id.
+-- report_evidence_bucket_verifier_select: Verifier may read any evidence
+--   object in this bucket, matching report_evidence table SELECT policy.
+-- report_evidence_bucket_coordinator_select_verified: Coordinator may read
+--   evidence only for reports already verified, matching report_evidence
+--   table SELECT policy.
