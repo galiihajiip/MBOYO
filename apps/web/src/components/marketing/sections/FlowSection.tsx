@@ -1,10 +1,10 @@
 const FLOW_STEPS = [
-  { step: "01", title: "Ambil Foto & GPS Offline", detail: "Pelapor mengambil foto kerusakan & lokasi GPS di perangkat tanpa koneksi seluler.", tag: "Offline" },
-  { step: "02", title: "Penyimpanan Lokal Aman", detail: "Laporan tersimpan di Dexie IndexedDB perangkat, aman dari kegagalan aplikasi.", tag: "IndexedDB" },
-  { step: "03", title: "Sinkronisasi Otomatis", detail: "Dikirim idempoten begitu sinyal seluler atau Wi-Fi terhubung kembali.", tag: "Auto-Sync" },
-  { step: "04", title: "Triase Vision AI Lokal", detail: "Model ONNX menganalisis foto untuk memprediksi tingkat kerusakan awal (<500ms).", tag: "AI Triage" },
-  { step: "05", title: "Verifikasi Berbasis Manusia", detail: "Petugas meninjau bukti untuk mengonfirmasi, merevisi, menolak, atau mengeskalasi.", tag: "Verifikator" },
-  { step: "06", title: "Koordinasi Respons Geospasial", detail: "Koordinator memprioritaskan insiden di Peta Krisis & menugaskan tim lapangan.", tag: "Command Center" },
+  { step: "01", title: "Foto & Lokasi Diambil", detail: "Pelapor memotret kerusakan dan menandai lokasi di HP-nya, tanpa perlu sinyal seluler sama sekali.", tag: "Offline" },
+  { step: "02", title: "Tersimpan Aman di HP", detail: "Laporan langsung tersimpan di perangkat, tidak hilang meski aplikasi tertutup atau HP restart.", tag: "Aman di HP" },
+  { step: "03", title: "Terkirim Otomatis", detail: "Begitu sinyal atau Wi-Fi kembali, laporan langsung terkirim sendiri, tanpa risiko terkirim dua kali.", tag: "Auto-Sync" },
+  { step: "04", title: "Disaring Cepat oleh AI", detail: "Sistem langsung memberi perkiraan awal tingkat kerusakan dalam hitungan detik setelah foto terkirim.", tag: "Penyaringan AI" },
+  { step: "05", title: "Dicek oleh Petugas", detail: "Petugas terlatih meninjau bukti untuk mengonfirmasi, memperbaiki, menolak, atau menaikkan level laporan.", tag: "Verifikator" },
+  { step: "06", title: "Tim Bantuan Ditugaskan", detail: "Koordinator melihat laporan terverifikasi di peta, menentukan prioritas, dan mengirim tim ke lokasi.", tag: "Respons Lapangan" },
 ] as const;
 
 /**
@@ -22,13 +22,14 @@ export function FlowSection() {
       <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-10">
         <div className="mx-auto max-w-2xl text-center">
           <span className="inline-flex items-center gap-1.5 rounded-full border border-brand-signal-cyan/40 bg-brand-signal-cyan/10 px-3.5 py-1 font-mono text-xs font-bold text-brand-signal-cyan">
-            ALUR SISTEM TERINTEGRASI
+            DARI FOTO SAMPAI TIM BANTUAN TIBA
           </span>
           <h2 className="mt-3 font-sans text-2xl font-extrabold text-white sm:text-3xl lg:text-4xl">
             Bagaimana MBOYO Bekerja di Lapangan
           </h2>
           <p className="mt-3 font-sans text-base text-slate-300">
-            Dari pengambilan foto offline hingga alokasi tim respons: satu alur transparan yang dapat ditelusuri fully.
+            Dari saat foto diambil tanpa sinyal, sampai tim bantuan ditugaskan ke lokasi — setiap langkah bisa
+            ditelusuri, tidak ada yang tersembunyi.
           </p>
         </div>
 

@@ -25,20 +25,21 @@ export function CtaBanner() {
                 <svg className="h-3.5 w-3.5 text-brand-signal-cyan" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
-                SIAP UNTUK SITUASI DARURAT BENCANA
+                SIAP DIPAKAI KAPAN SAJA BENCANA TERJADI
               </span>
 
               <h2 className="font-sans text-2xl font-extrabold text-white sm:text-3xl lg:text-4xl">
-                Laporan Bencana Tetap Terkirim: Tanpa Bergantung pada Sinyal Seluler.
+                Sinyal Boleh Putus, Laporan Anda Tidak Akan Hilang.
               </h2>
               <p className="font-sans text-sm text-slate-300 sm:text-base">
-                MBOYO siap membantu warga, verifikator, dan koordinator di seluruh wilayah Indonesia merespons bencana dengan cepat dan tepat.
+                MBOYO membantu warga, petugas verifikator, dan koordinator di seluruh Indonesia melaporkan dan
+                merespons bencana lebih cepat, tanpa perlu menunggu sinyal kembali dulu.
               </p>
             </div>
 
             <div className="flex flex-col gap-3.5 sm:flex-row shrink-0 w-full sm:w-auto justify-center">
               <Link
-                href="/masuk?next=%2Fpelapor%2Flaporan%2Fbaru"
+                href="/masuk?next=%2Freporter%2Flaporan%2Fbaru"
                 className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-brand-caution-amber px-6 font-sans text-base font-bold text-brand-ink-navy shadow-lg shadow-brand-caution-amber/20 transition-all hover:bg-amber-400"
               >
                 <span>Buat Laporan</span>

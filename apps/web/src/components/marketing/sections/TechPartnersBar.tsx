@@ -4,19 +4,19 @@
  */
 export function TechPartnersBar() {
   const technologies = [
-    { name: "Next.js 16 App Router", category: "Fullstack PWA" },
-    { name: "Supabase & PostGIS", category: "Geospatial Database" },
-    { name: "FastAPI & ONNX Runtime", category: "Vision AI Engine" },
-    { name: "Tailwind CSS 4", category: "Design System UI" },
-    { name: "Dexie.js & IndexedDB", category: "Offline Storage" },
-    { name: "Sentry Observability", category: "Error Monitoring" },
+    { name: "Next.js 16 App Router", category: "Aplikasi Web & HP" },
+    { name: "Supabase & PostGIS", category: "Basis Data & Peta" },
+    { name: "FastAPI & ONNX Runtime", category: "Mesin AI Penilai Kerusakan" },
+    { name: "Tailwind CSS 4", category: "Tampilan Antarmuka" },
+    { name: "Dexie.js & IndexedDB", category: "Penyimpanan di HP" },
+    { name: "Sentry Observability", category: "Pemantau Error" },
   ];
 
   return (
     <div className="border-y border-brand-border bg-surface-container-low py-6">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-10">
         <p className="text-center font-sans text-xs font-bold uppercase tracking-wider text-on-surface-variant">
-          Ditenagai oleh Arsitektur Teknologi Mandiri & Terpercaya
+          Dibangun dengan Teknologi yang Sudah Terbukti Andal
         </p>
 
         <div className="mt-4 flex flex-wrap items-center justify-center gap-3 sm:gap-6">

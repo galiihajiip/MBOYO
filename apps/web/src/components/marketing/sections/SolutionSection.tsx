@@ -1,8 +1,8 @@
 const PILLARS = [
   {
-    title: "1. Pelaporan Offline-First",
-    badge: "IndexedDB PWA",
-    body: "Pembuatan laporan foto & lokasi GPS 100% tidak pernah bergantung pada sinyal seluler. Laporan tersimpan di IndexedDB perangkat hingga koneksi pulih.",
+    title: "1. Tetap Bisa Melapor Tanpa Internet",
+    badge: "Kerja Tanpa Sinyal",
+    body: "Foto dan lokasi tersimpan langsung di HP pelapor, bahkan saat tidak ada sinyal sama sekali. Begitu jaringan menyala lagi, laporan otomatis terkirim — tidak perlu dikirim ulang, dan tidak akan tergandakan.",
     icon: (
       <svg className="h-6 w-6 text-brand-signal-cyan" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
@@ -11,20 +11,20 @@ const PILLARS = [
     cardColor: "border-brand-signal-cyan/30 bg-surface-container-lowest hover:border-brand-signal-cyan",
   },
   {
-    title: "2. Triase Vision AI Lokal",
-    badge: "FastAPI ONNX",
-    body: "Model AI lokal menganalisis foto kerusakan bangunan (<500ms) untuk mengkategorikan tingkat keparahan awal & deteksi duplikasi gambar secara otomatis.",
+    title: "2. AI Bantu Sortir, Bukan Gantikan Petugas",
+    badge: "Penyaringan Cepat",
+    body: "Begitu foto masuk, AI langsung memberi perkiraan awal seberapa parah kerusakannya dalam hitungan detik. Petugas jadi bisa fokus mengecek laporan paling gawat lebih dulu, alih-alih membaca ribuan laporan satu per satu tanpa urutan prioritas.",
     icon: (
       <svg className="h-6 w-6 text-brand-caution-amber" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 01-2 2h- Red 0 01-2-2v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 01-2 2h-0a2 2 0 01-2-2v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
       </svg>
     ),
     cardColor: "border-brand-caution-amber/30 bg-surface-container-lowest hover:border-brand-caution-amber",
   },
   {
-    title: "3. Verifikasi Berbasis Manusia",
-    badge: "Human-in-Loop",
-    body: "AI hanya membantu triase — keputusan akhir konfirmasi, revisi, penolakan, atau eskalasi selalu berada di tangan Petugas Verifikator yang berwenang.",
+    title: "3. Keputusan Akhir Selalu di Tangan Manusia",
+    badge: "Bukan Keputusan Robot",
+    body: "AI tidak pernah punya kata terakhir. Setiap laporan tetap dicek, dikonfirmasi, atau diperbaiki oleh petugas terlatih sebelum dianggap sah — jadi tidak ada rumah yang salah dinilai hanya karena kesalahan algoritma.",
     icon: (
       <svg className="h-6 w-6 text-brand-relief-teal" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -33,9 +33,9 @@ const PILLARS = [
     cardColor: "border-brand-relief-teal/30 bg-surface-container-lowest hover:border-brand-relief-teal",
   },
   {
-    title: "4. Command Center Geospasial",
-    badge: "PostGIS Bounds",
-    body: "Peta krisis realtime dengan klasterisasi insiden otomatis & penugasan tim respons lapangan berdasarkan tingkat prioritas operasional.",
+    title: "4. Satu Peta untuk Semua Tim Bantuan",
+    badge: "Semua Terlihat di Satu Tempat",
+    body: "Laporan yang sudah dikonfirmasi langsung muncul di peta terpusat. Koordinator bisa lihat mana yang paling parah, mengelompokkan kejadian yang berdekatan, lalu menugaskan tim ke lokasi yang paling butuh bantuan lebih dulu.",
     icon: (
       <svg className="h-6 w-6 text-brand-safe-green" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
@@ -51,13 +51,14 @@ export function SolutionSection() {
     <section id="solusi" className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20 lg:px-10">
       <div className="mx-auto max-w-3xl text-center">
         <span className="inline-flex items-center gap-1.5 rounded-full border border-brand-signal-cyan/40 bg-brand-signal-cyan/10 px-3.5 py-1 font-mono text-xs font-bold text-brand-signal-cyan">
-          SOLUSI ARSITEKTUR
+          BEGINI CARA MBOYO MENJAWABNYA
         </span>
         <h2 className="mt-3 font-sans text-2xl font-extrabold text-on-surface sm:text-3xl lg:text-4xl">
-          Empat Pilar Tanggap Bencana MBOYO
+          Empat Hal yang Membuat MBOYO Berbeda
         </h2>
         <p className="mt-3 font-sans text-base text-on-surface-variant">
-          Dirancang dari dasar untuk menjamin keandalan saat darurat — menghubungkan warga, AI, verifikator, dan command center.
+          Dirancang khusus untuk kondisi paling sulit sekalipun — menghubungkan warga, AI penyaring cepat,
+          petugas pengecek, dan tim bantuan dalam satu alur yang tidak putus meski jaringan mati.
         </p>
       </div>
 

@@ -66,7 +66,8 @@ export function FaqSection() {
             </h2>
 
             <p className="font-sans text-sm text-slate-300 leading-relaxed">
-              Pahami bagaimana MBOYO menjaga keandalan laporan offline, privasi data geospasial, dan integrasi AI lokal secara transparan.
+              Jawaban jujur soal cara MBOYO menjaga laporan Anda tetap terkirim, siapa saja yang bisa melihat
+              data Anda, dan seberapa besar peran AI dalam semua ini.
             </p>
 
             <div className="mt-2 flex flex-col gap-2.5 rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
@@ -94,7 +95,7 @@ export function FaqSection() {
               </div>
               <div className="flex flex-col">
                 <span className="font-sans text-xs font-bold text-white">Butuh Penjelasan Tambahan?</span>
-                <span className="font-sans text-xs text-slate-400">Tim Dukungan MBOYO Siap Membantu 24/7</span>
+                <span className="font-sans text-xs text-slate-400">Tim Dukungan VETERAN KUKUS Siap Membantu 24/7</span>
               </div>
             </div>
           </div>

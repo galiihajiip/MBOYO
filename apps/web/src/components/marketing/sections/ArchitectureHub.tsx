@@ -25,13 +25,14 @@ export function ArchitectureHub() {
     <section id="keamanan-data" className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20 lg:px-10">
       <div className="mx-auto max-w-3xl text-center">
         <span className="inline-flex items-center gap-1.5 rounded-full border border-brand-signal-cyan/40 bg-brand-signal-cyan/10 px-3.5 py-1 font-mono text-xs font-bold text-brand-signal-cyan">
-          ARSITEKTUR & KEAMANAN
+          BUKAN SEKADAR KLAIM
         </span>
         <h2 className="mt-3 font-sans text-2xl font-extrabold text-on-surface sm:text-3xl lg:text-4xl">
-          Bukti Keandalan Sistem MBOYO
+          Ini Cara Kami Menjaga Kepercayaan Anda
         </h2>
         <p className="mt-3 font-sans text-base text-on-surface-variant">
-          Pilih tab di bawah untuk melihat rincian arsitektur offline, triase vision AI, komando geospasial, dan keamanan data.
+          Pilih salah satu topik di bawah untuk melihat bagaimana MBOYO bekerja tanpa sinyal, bagaimana AI
+          dan petugas saling melengkapi, bagaimana peta bantuan berjalan, dan bagaimana data Anda dijaga.
         </p>
       </div>
 
@@ -46,7 +47,7 @@ export function ArchitectureHub() {
               : "text-on-surface-variant hover:bg-surface-container-lowest hover:text-on-surface"
           }`}
         >
-          <span>Offline-First PWA</span>
+          <span>Tanpa Internet</span>
         </button>
 
         <button
@@ -58,7 +59,7 @@ export function ArchitectureHub() {
               : "text-on-surface-variant hover:bg-surface-container-lowest hover:text-on-surface"
           }`}
         >
-          <span>AI + Verifikasi Manusia</span>
+          <span>AI & Petugas</span>
         </button>
 
         <button
@@ -70,7 +71,7 @@ export function ArchitectureHub() {
               : "text-on-surface-variant hover:bg-surface-container-lowest hover:text-on-surface"
           }`}
         >
-          <span>Peta Geospasial</span>
+          <span>Peta Bantuan</span>
         </button>
 
         <button
@@ -92,27 +93,27 @@ export function ArchitectureHub() {
           <div className="grid gap-8 lg:grid-cols-12 lg:items-center">
             <div className="flex flex-col gap-4 lg:col-span-7">
               <span className="font-mono text-xs font-bold text-brand-signal-cyan uppercase tracking-wider">
-                BUKTI TEKNIS OFFLINE-FIRST
+                BUKAN SEKADAR JANJI DI IKLAN
               </span>
               <h3 className="font-sans text-2xl font-extrabold text-on-surface">
-                Offline Bukan Sekadar Klaim: Tersimpan Aman di IndexedDB
+                Laporan Anda Tersimpan Aman, Bahkan Tanpa Sinyal
               </h3>
               <ul className="flex flex-col gap-3 font-sans text-sm text-on-surface-variant">
                 <li className="flex items-start gap-2.5">
                   <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand-safe-green text-xs font-bold text-white">✓</span>
-                  <span><strong>IndexedDB Perangkat:</strong> Laporan disimpan di IndexedDB lokal, tidak pernah menunggu jaringan untuk tersimpan.</span>
+                  <span><strong>Tersimpan Langsung di HP:</strong> Laporan tersimpan di perangkat Anda seketika, tidak pernah menunggu jaringan untuk tersimpan.</span>
                 </li>
                 <li className="flex items-start gap-2.5">
                   <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand-safe-green text-xs font-bold text-white">✓</span>
-                  <span><strong>Bertahan Restart:</strong> Antrean laporan bertahan meski halaman dimuat ulang atau aplikasi ditutup sepenuhnya.</span>
+                  <span><strong>Tidak Hilang Saat Restart:</strong> Antrean laporan tetap ada meski HP dimatikan, aplikasi ditutup, atau baterai habis.</span>
                 </li>
                 <li className="flex items-start gap-2.5">
                   <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand-safe-green text-xs font-bold text-white">✓</span>
-                  <span><strong>Workbox Background Sync:</strong> Menyinkronkan otomatis begitu koneksi kembali, tanpa perlu aksi manual pengguna.</span>
+                  <span><strong>Terkirim Sendiri Otomatis:</strong> Begitu sinyal atau Wi-Fi kembali, laporan langsung terkirim tanpa perlu Anda buka aplikasi lagi.</span>
                 </li>
                 <li className="flex items-start gap-2.5">
                   <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand-safe-green text-xs font-bold text-white">✓</span>
-                  <span><strong>Idempoten:</strong> Percobaan ulang pengiriman tidak pernah menghasilkan laporan ganda di database.</span>
+                  <span><strong>Tidak Pernah Terkirim Dua Kali:</strong> Percobaan ulang pengiriman tidak pernah menghasilkan laporan ganda di database.</span>
                 </li>
               </ul>
             </div>
@@ -137,13 +138,16 @@ export function ArchitectureHub() {
           <div className="grid gap-8 lg:grid-cols-12 lg:items-center">
             <div className="flex flex-col gap-4 lg:col-span-7">
               <span className="font-mono text-xs font-bold text-brand-caution-amber uppercase tracking-wider">
-                COMPUTER VISION + HUMAN-IN-THE-LOOP
+                AI MENYARING, MANUSIA MEMUTUSKAN
               </span>
               <h3 className="font-sans text-2xl font-extrabold text-on-surface">
-                AI Menyaring, Manusia Memutuskan
+                AI Membantu Cepat, Petugas Tetap Pegang Keputusan
               </h3>
               <p className="font-sans text-sm text-on-surface-variant leading-relaxed">
-                Model computer vision lokal menghasilkan probabilitas tingkat keparahan untuk setiap laporan. Sinyal awal membantu Verifikator memprioritaskan peninjauan. Model tidak pernah membuat keputusan akhir: setiap laporan tetap memerlukan konfirmasi, koreksi, atau penolakan dari Verifikator manusia sebelum menjadi insiden terverifikasi.
+                Setiap foto yang masuk langsung diberi perkiraan awal seberapa parah kerusakannya oleh AI yang
+                berjalan di server kami sendiri. Perkiraan ini membantu petugas tahu laporan mana yang perlu
+                dicek lebih dulu. Tapi AI tidak pernah punya kata akhir — setiap laporan tetap harus dikonfirmasi,
+                diperbaiki, atau ditolak oleh petugas manusia sebelum dianggap sah.
               </p>
               <p className="font-sans text-xs text-on-surface-variant italic bg-surface-container-low p-3 rounded-xl border border-brand-border">
                 Jika model belum memenuhi ambang evaluasi yang ditetapkan, hasilnya ditandai sebagai saran, bukan keputusan. Verifikator tetap melakukan tinjauan manual penuh.
@@ -206,13 +210,16 @@ export function ArchitectureHub() {
         {activeTab === "geospatial" && (
           <div className="flex flex-col gap-4">
             <span className="font-mono text-xs font-bold text-brand-relief-teal uppercase tracking-wider">
-              POSTGIS COMMAND CENTER
+              SEMUA LAPORAN, SATU PETA
             </span>
             <h3 className="font-sans text-2xl font-extrabold text-on-surface">
-              Koordinasi Respons Berbasis Lokasi Geospasial
+              Tim Bantuan Tahu Persis Harus Kemana
             </h3>
             <p className="font-sans text-sm text-on-surface-variant leading-relaxed">
-              Insiden yang terverifikasi tampil pada peta krisis Koordinator secara langsung, dikelompokkan berdasarkan kedekatan lokasi menggunakan PostGIS. Koordinator dapat menetapkan prioritas, mengelompokkan insiden terkait, dan menugaskan tim respons dari satu command center.
+              Setiap laporan yang sudah dikonfirmasi langsung muncul di peta bantuan koordinator, dikelompokkan
+              otomatis berdasarkan kedekatan lokasinya. Koordinator bisa melihat mana yang paling mendesak,
+              menggabungkan laporan yang berasal dari satu lokasi kejadian, dan menugaskan tim ke sana — semua
+              dari satu layar.
             </p>
             <div className="rounded-xl border border-brand-border bg-surface-container-low p-4 font-sans text-xs text-on-surface-variant">
               <strong>Dukungan Aksesibilitas Cadangan:</strong> Jika peta tidak dapat dimuat, tampilan daftar tetap tersedia sebagai cadangan. Peta adalah peningkatan pengalaman, bukan satu-satunya jalan untuk melihat insiden.
@@ -223,41 +230,42 @@ export function ArchitectureHub() {
         {activeTab === "security" && (
           <div className="flex flex-col gap-4">
             <span className="font-mono text-xs font-bold text-brand-critical-red uppercase tracking-wider">
-              KEDAULATAN & PRIVASI DATA BENCANA
+              DATA ANDA BUKAN UNTUK SEMBARANG ORANG
             </span>
             <h3 className="font-sans text-2xl font-extrabold text-on-surface">
-              Kedaulatan dan Keamanan Data Terjamin
+              Data Korban dan Lokasi Bencana Kami Jaga Ketat
             </h3>
             <p className="font-sans text-sm text-on-surface-variant">
-              Data korban dan lokasi bencana adalah data sensitif, MBOYO dirancang untuk menjaganya tetap privat dan dapat diaudit.
+              Foto dan lokasi bencana adalah informasi sensitif. MBOYO dirancang supaya data itu tetap privat
+              dan setiap aksesnya bisa ditelusuri kembali.
             </p>
 
             <div className="grid gap-4 sm:grid-cols-2 pt-2">
               <div className="rounded-xl border border-brand-border bg-surface-container-low p-4">
-                <h4 className="font-sans text-xs font-bold text-on-surface">Bukti Tersimpan Privat</h4>
+                <h4 className="font-sans text-xs font-bold text-on-surface">Foto Anda Tidak Bisa Dilihat Sembarangan</h4>
                 <p className="mt-1 font-sans text-xs text-on-surface-variant leading-relaxed">
-                  Foto laporan disimpan di bucket privat, tidak pernah diakses melalui tautan publik tanpa otorisasi.
+                  Foto laporan disimpan di tempat privat, tidak pernah bisa dibuka lewat tautan publik tanpa izin.
                 </p>
               </div>
 
               <div className="rounded-xl border border-brand-border bg-surface-container-low p-4">
-                <h4 className="font-sans text-xs font-bold text-on-surface">Model Lokal, Bukan Pihak Ketiga</h4>
+                <h4 className="font-sans text-xs font-bold text-on-surface">AI Kami Sendiri, Bukan Titip ke Pihak Luar</h4>
                 <p className="mt-1 font-sans text-xs text-on-surface-variant leading-relaxed">
-                  Klasifikasi utama dijalankan oleh model computer vision yang dijalankan dan dievaluasi sendiri, bukan API eksternal.
+                  Penilaian kerusakan utama dijalankan oleh model AI milik kami sendiri, bukan dikirim ke layanan pihak ketiga.
                 </p>
               </div>
 
               <div className="rounded-xl border border-brand-border bg-surface-container-low p-4">
-                <h4 className="font-sans text-xs font-bold text-on-surface">AI Eksternal Opsional & Saran</h4>
+                <h4 className="font-sans text-xs font-bold text-on-surface">AI Tambahan Bersifat Opsional</h4>
                 <p className="mt-1 font-sans text-xs text-on-surface-variant leading-relaxed">
-                  Jika diaktifkan, Gemini hanya memberi konteks tambahan bagi Verifikator, tidak pernah menjadi keputusan otomatis.
+                  Jika diaktifkan, Gemini hanya memberi konteks tambahan bagi petugas, tidak pernah menjadi keputusan otomatis.
                 </p>
               </div>
 
               <div className="rounded-xl border border-brand-border bg-surface-container-low p-4">
-                <h4 className="font-sans text-xs font-bold text-on-surface">Retensi Data Dikonfigurasi</h4>
+                <h4 className="font-sans text-xs font-bold text-on-surface">Data Tidak Disimpan Selamanya</h4>
                 <p className="mt-1 font-sans text-xs text-on-surface-variant leading-relaxed">
-                  Kebijakan retensi bukti mentah ditentukan oleh Administrator Sistem dan terlihat oleh Auditor.
+                  Ada aturan jelas berapa lama bukti foto disimpan, dan setiap perubahannya bisa dicek oleh auditor independen.
                 </p>
               </div>
             </div>

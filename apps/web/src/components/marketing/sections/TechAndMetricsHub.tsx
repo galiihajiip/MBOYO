@@ -1,9 +1,21 @@
 import Link from "next/link";
 
 const STACK_LAYERS = [
-  { layer: "Aplikasi & Antarmuka", items: ["Next.js App Router (PWA)", "Dexie / IndexedDB", "Workbox Background Sync"] },
-  { layer: "Data & Platform", items: ["Supabase Auth", "Postgres + PostGIS", "Storage Privat & Realtime"] },
-  { layer: "Kecerdasan Buatan", items: ["FastAPI & ONNX Runtime", "Model Registry & Evaluasi Terukur"] },
+  {
+    layer: "Aplikasi & Antarmuka",
+    why: "Bisa dibuka langsung dari browser HP tanpa install dari app store — penting karena warga sering tidak sempat atau tidak bisa unduh aplikasi baru saat sinyal terbatas.",
+    items: ["Next.js App Router (PWA)", "Dexie / IndexedDB", "Workbox Background Sync"],
+  },
+  {
+    layer: "Data & Platform",
+    why: "Punya dukungan bawaan untuk data lokasi (peta), jadi pengelompokan laporan berdasarkan lokasi bisa langsung dilakukan di database, bukan dihitung manual satu-satu.",
+    items: ["Supabase Auth", "Postgres + PostGIS", "Storage Privat & Realtime"],
+  },
+  {
+    layer: "Kecerdasan Buatan",
+    why: "Model AI berjalan di server kami sendiri, bukan dikirim ke layanan pihak ketiga — hasil penilaian bisa dievaluasi ulang dan diaudit kapan saja.",
+    items: ["FastAPI & ONNX Runtime", "Model Registry & Evaluasi Terukur"],
+  },
 ];
 
 /**
@@ -19,13 +31,14 @@ export function TechAndMetricsHub() {
           <div className="flex flex-col justify-between rounded-3xl border border-brand-border bg-surface-container-lowest p-6 shadow-lg sm:p-8">
             <div>
               <span className="font-mono text-xs font-bold text-brand-signal-cyan uppercase tracking-wider">
-                ARSITEKTUR HANDAL
+                DI BALIK LAYAR
               </span>
               <h3 className="mt-2 font-sans text-2xl font-extrabold text-on-surface">
-                Teknologi MBOYO
+                Teknologi yang Kami Pakai
               </h3>
               <p className="mt-2 font-sans text-sm text-on-surface-variant">
-                Arsitektur yang dirancang untuk keandalan di lapangan bencana alam, bukan hanya demo di kantor.
+                Dipilih supaya tetap bisa diandalkan saat dipakai langsung di lokasi bencana, bukan cuma lancar
+                waktu didemokan di kantor.
               </p>
 
               <div className="mt-6 flex flex-col gap-4">
@@ -34,6 +47,9 @@ export function TechAndMetricsHub() {
                     <h4 className="font-sans text-xs font-bold uppercase tracking-wide text-on-surface-variant">
                       {layer.layer}
                     </h4>
+                    <p className="mt-1 font-sans text-xs leading-relaxed text-on-surface-variant">
+                      {layer.why}
+                    </p>
                     <div className="mt-2 flex flex-wrap gap-2">
                       {layer.items.map((item) => (
                         <span key={item} className="rounded-md border border-brand-border bg-surface-container-lowest px-2.5 py-1 font-mono text-xs text-on-surface">
@@ -51,33 +67,38 @@ export function TechAndMetricsHub() {
           <div id="dampak" className="flex flex-col justify-between rounded-3xl border border-brand-border bg-surface-container-lowest p-6 shadow-lg sm:p-8">
             <div>
               <span className="font-mono text-xs font-bold text-brand-safe-green uppercase tracking-wider">
-                TRANSPARANSI EVALUASI & DAMPAK
+                KAMI TIDAK KARANG ANGKA
               </span>
               <h3 className="mt-2 font-sans text-2xl font-extrabold text-on-surface">
-                Metrik yang Kami Ukur: Transparansi Evaluasi
+                Metrik MBOYO Sendiri: Jujur Apa Adanya
               </h3>
               <p className="mt-2 font-sans text-sm text-on-surface-variant">
-                Kami tidak mempublikasikan angka akurasi sebelum diukur pada data uji yang belum pernah dilihat model.
+                Kami tidak akan memasang angka akurasi sebelum benar-benar diukur pada data uji yang belum
+                pernah dilihat sistemnya. Di bawah ini metrik yang sedang kami kumpulkan, apa adanya.
               </p>
 
               <div className="mt-6 grid gap-3 sm:grid-cols-2">
                 <div className="rounded-xl border border-brand-border bg-surface-container-low p-4">
                   <span className="font-sans text-xs font-bold text-on-surface">Tingkat Sukses Antrean Offline</span>
+                  <p className="mt-1 font-sans text-[11px] text-on-surface-variant">Berapa persen laporan offline yang berhasil terkirim tanpa gagal.</p>
                   <p className="mt-1 font-mono text-xs text-brand-safe-green font-semibold">Diukur per sesi</p>
                 </div>
 
                 <div className="rounded-xl border border-brand-border bg-surface-container-low p-4">
                   <span className="font-sans text-xs font-bold text-on-surface">Macro-F1 Model</span>
+                  <p className="mt-1 font-sans text-[11px] text-on-surface-variant">Seberapa akurat AI menebak tingkat kerusakan, dirata-rata adil di semua kategori.</p>
                   <p className="mt-1 font-mono text-xs text-brand-signal-cyan font-semibold">Setelah evaluasi</p>
                 </div>
 
                 <div className="rounded-xl border border-brand-border bg-surface-container-low p-4">
                   <span className="font-sans text-xs font-bold text-on-surface">Recall Kelas Hancur Total</span>
+                  <p className="mt-1 font-sans text-[11px] text-on-surface-variant">Seberapa sering AI berhasil menangkap kasus kerusakan paling parah, bukan malah melewatkannya.</p>
                   <p className="mt-1 font-mono text-xs text-brand-critical-red font-semibold">Setelah evaluasi</p>
                 </div>
 
                 <div className="rounded-xl border border-brand-border bg-surface-container-low p-4">
                   <span className="font-sans text-xs font-bold text-on-surface">Reliabilitas Demo Langsung</span>
+                  <p className="mt-1 font-sans text-[11px] text-on-surface-variant">Berapa persen sesi demo yang berjalan lancar tanpa bantuan manual di belakang layar.</p>
                   <p className="mt-1 font-mono text-xs text-brand-caution-amber font-semibold">Diukur per sesi</p>
                 </div>
               </div>

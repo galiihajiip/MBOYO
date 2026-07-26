@@ -52,13 +52,14 @@ export function RoleSeparationSection() {
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-10">
         <div className="mx-auto max-w-3xl text-center">
           <span className="inline-flex items-center gap-1.5 rounded-full border border-brand-signal-cyan/40 bg-brand-signal-cyan/10 px-3.5 py-1 font-mono text-xs font-bold text-brand-signal-cyan">
-            ARSITEKTUR HAK AKSES RLS
+            SIAPA BISA LIHAT APA
           </span>
           <h2 className="mt-3 font-sans text-2xl font-extrabold text-on-surface sm:text-3xl lg:text-4xl">
-            5 Peran Terpisah: Diatur Ketat oleh Row Level Security (RLS)
+            5 Peran, 5 Batas Akses yang Jelas
           </h2>
           <p className="mt-3 font-sans text-base text-on-surface-variant">
-            Setiap peran memiliki batasan otorisasi yang dijamin langsung oleh database Supabase PostGIS, mencegah kebocoran data sensitif antar pengguna.
+            Setiap peran hanya bisa melihat data yang memang menjadi tugasnya. Batasan ini dijaga langsung oleh
+            database, bukan sekadar aturan di aplikasi — jadi tidak ada celah untuk mengintip data orang lain.
           </p>
         </div>
 
@@ -81,7 +82,7 @@ export function RoleSeparationSection() {
                   <span className={`inline-flex rounded-full border px-2.5 py-0.5 font-mono text-[10px] font-bold ${item.badgeColor}`}>
                     {item.badge}
                   </span>
-                  <span className="font-mono text-xs font-bold text-slate-500">RLS Active</span>
+                  <span className="font-mono text-xs font-bold text-slate-500">Akses Terjaga</span>
                 </div>
 
                 <h3 className="mt-4 font-sans text-lg font-extrabold text-on-surface group-hover:text-brand-signal-cyan transition-colors">
@@ -102,9 +103,9 @@ export function RoleSeparationSection() {
         </div>
 
         <div className="mt-10 text-center font-sans text-xs text-on-surface-variant">
-          Pelajari lebih detail mengenai skema RLS di{" "}
-          <Link href="/docs" className="font-bold text-brand-signal-cyan hover:underline">
-            Dokumentasi Navigasi Peran &rarr;
+          Pelajari lebih detail mengenai cara kami menjaga data di{" "}
+          <Link href="/data-governance" className="font-bold text-brand-signal-cyan hover:underline">
+            halaman Tata Kelola Data &rarr;
           </Link>
         </div>
       </div>
