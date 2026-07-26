@@ -73,7 +73,7 @@ create function public.record_consent(
 returns public.consent_records
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_profile_id uuid;

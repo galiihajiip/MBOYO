@@ -35,7 +35,7 @@ create or replace function public.record_analysis_result(
 returns public.model_predictions
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_prediction public.model_predictions;
