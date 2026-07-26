@@ -38,8 +38,8 @@ select
   -- which isn't a severity agreement/disagreement judgment at all.
   case
     when vr.decision = 'confirm' then 'agreement'
-    when vr.decision = 'override' and vr.override_severity = latest_prediction.top_severity then 'agreement'
-    when vr.decision = 'override' and vr.override_severity is distinct from latest_prediction.top_severity then 'override'
+    when vr.decision = 'override' and vr.override_severity::text = latest_prediction.top_severity then 'agreement'
+    when vr.decision = 'override' and vr.override_severity::text is distinct from latest_prediction.top_severity then 'override'
     else 'other'
   end as agreement_classification
 from public.verification_reviews vr

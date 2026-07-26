@@ -21,7 +21,15 @@ create policy generated_exports_bucket_admin_select on storage.objects
     and public.has_role('system_administrator')
   );
 
-comment on policy report_evidence_bucket_admin_select on storage.objects is
-  'System Administrator may read (list/inspect metadata for) evidence objects for storage-usage reporting only — Admin cannot validate/dispatch per AGENTS.md, and this policy grants no write.';
-comment on policy generated_exports_bucket_admin_select on storage.objects is
-  'System Administrator may read (list/inspect metadata for) export objects for storage-usage reporting only.';
+-- `comment on policy ... on storage.objects` statements were removed here:
+-- Supabase Cloud's migration role doesn't own storage.objects (it's owned
+-- by supabase_storage_admin), so COMMENT ON POLICY fails with "must be
+-- owner of relation objects". These were documentation-only (no RLS/access
+-- effect) — see the policy definitions above for the same information.
+-- report_evidence_bucket_admin_select: System Administrator may read
+--   (list/inspect metadata for) evidence objects for storage-usage
+--   reporting only — Admin cannot validate/dispatch per AGENTS.md, and
+--   this policy grants no write.
+-- generated_exports_bucket_admin_select: System Administrator may read
+--   (list/inspect metadata for) export objects for storage-usage
+--   reporting only.
