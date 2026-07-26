@@ -9,25 +9,24 @@
 -- report, so the Auditor's Audit Trail / Laporan Read-Only screens
 -- (docs/product/SCREEN_INVENTORY.md) have something real to display.
 --
--- Demo auth users are inserted directly into auth.users (local-dev only —
--- this bypasses the Auth API's signup flow, which is fine for `supabase db
--- reset` seeding but must never be done against a hosted/production
--- project). All demo accounts share the password "DemoMboyo2026!" — never
--- used outside local development, and the demo-account chooser
--- (apps/web/src/app/(auth)/masuk/DemoAccountChooser.tsx) that surfaces
--- these credentials in the UI only renders when DEMO_MODE is enabled
--- (docs/product/BLOCK 09 auth requirements).
+-- Demo auth users must already exist (created via the Auth API — see the
+-- comment inside the do $$ block below) before running this file; it looks
+-- them up by email rather than creating them. All demo accounts share the
+-- password "DemoMboyo2026!" — never used outside demo/local environments,
+-- and the demo-account chooser (apps/web/src/app/(auth)/masuk/DemoAccountChooser.tsx)
+-- that surfaces these credentials in the UI only renders when DEMO_MODE is
+-- enabled (docs/product/BLOCK 09 auth requirements).
 
 do $$
 declare
   v_org_id uuid;
   v_event_id uuid;
 
-  v_reporter_user_id uuid := '00000000-0000-0000-0000-000000000001';
-  v_verifier_user_id uuid := '00000000-0000-0000-0000-000000000002';
-  v_coordinator_user_id uuid := '00000000-0000-0000-0000-000000000003';
-  v_admin_user_id uuid := '00000000-0000-0000-0000-000000000004';
-  v_auditor_user_id uuid := '00000000-0000-0000-0000-000000000005';
+  v_reporter_user_id uuid := (select id from auth.users where email = 'reporter@mboyo.demo');
+  v_verifier_user_id uuid := (select id from auth.users where email = 'verifier@mboyo.demo');
+  v_coordinator_user_id uuid := (select id from auth.users where email = 'coordinator@mboyo.demo');
+  v_admin_user_id uuid := (select id from auth.users where email = 'admin@mboyo.demo');
+  v_auditor_user_id uuid := (select id from auth.users where email = 'auditor@mboyo.demo');
 
   v_reporter_profile_id uuid;
   v_verifier_profile_id uuid;
@@ -52,41 +51,40 @@ declare
 
   v_task_id uuid;
 begin
-  -- ==========================================================================
-  -- Demo auth users (local dev only — see file header note)
-  -- ==========================================================================
+  -- Demo auth users are NOT created here. On Supabase Cloud, GoTrue requires
+  -- users to be created through the real Auth API (POST /auth/v1/admin/users)
+  -- — inserting directly into auth.users/auth.identities produces rows that
+  -- pass basic constraints but are structurally incompatible with GoTrue's
+  -- own queries (observed: "Database error checking/loading/querying schema"
+  -- on sign-in, even with a correct bcrypt password hash and a matching
+  -- identities row). Create the 5 accounts first via the Auth Admin API
+  -- (reporter@mboyo.demo / verifier@mboyo.demo / coordinator@mboyo.demo /
+  -- admin@mboyo.demo / auditor@mboyo.demo, password "DemoMboyo2026!"), then
+  -- run this seed — it looks the users up by email below. Local Supabase
+  -- (via `supabase db reset`) does not have this restriction, but looking
+  -- the users up by email works identically there once they exist.
 
-  insert into auth.users (
-    id, instance_id, aud, role, email, encrypted_password,
-    email_confirmed_at, created_at, updated_at, raw_app_meta_data, raw_user_meta_data
-  )
-  values
-    (v_reporter_user_id, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated',
-     'reporter@mboyo.demo', crypt('DemoMboyo2026!', gen_salt('bf')),
-     now(), now(), now(), '{"provider":"email","providers":["email"]}', '{}'),
-    (v_verifier_user_id, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated',
-     'verifier@mboyo.demo', crypt('DemoMboyo2026!', gen_salt('bf')),
-     now(), now(), now(), '{"provider":"email","providers":["email"]}', '{}'),
-    (v_coordinator_user_id, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated',
-     'coordinator@mboyo.demo', crypt('DemoMboyo2026!', gen_salt('bf')),
-     now(), now(), now(), '{"provider":"email","providers":["email"]}', '{}'),
-    (v_admin_user_id, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated',
-     'admin@mboyo.demo', crypt('DemoMboyo2026!', gen_salt('bf')),
-     now(), now(), now(), '{"provider":"email","providers":["email"]}', '{}'),
-    (v_auditor_user_id, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated',
-     'auditor@mboyo.demo', crypt('DemoMboyo2026!', gen_salt('bf')),
-     now(), now(), now(), '{"provider":"email","providers":["email"]}', '{}');
+  if v_reporter_user_id is null or v_verifier_user_id is null or v_coordinator_user_id is null
+     or v_admin_user_id is null or v_auditor_user_id is null then
+    raise exception 'seed.sql: one or more demo auth users do not exist yet — create reporter@mboyo.demo, verifier@mboyo.demo, coordinator@mboyo.demo, admin@mboyo.demo, and auditor@mboyo.demo via the Auth API first (see this file''s comment above).';
+  end if;
 
   -- ==========================================================================
   -- Organization and disaster_event
   -- ==========================================================================
 
   insert into public.organizations (name)
-  values ('PIDI Digdaya Demo')
+  values ('VETERAN KUKUS Demo')
   returning id into v_org_id;
 
-  insert into public.disaster_events (organization_id, name, status, geofence, starts_at)
+  -- Fixed id (not gen_random_uuid()) so apps/web/src/lib/reports/mock-events.ts's
+  -- MOCK_ACTIVE_EVENTS placeholder (used until BLOCK ?'s real disaster_events
+  -- query lands — see that file's own comment) can hardcode a stable
+  -- disaster_event_id that survives a reseed, instead of the report wizard's
+  -- Event step submitting a client-side id no server-side event actually has.
+  insert into public.disaster_events (id, organization_id, name, status, geofence, starts_at)
   values (
+    '00000000-0000-0000-0000-0000000000e1',
     v_org_id,
     'Banjir Jakarta Selatan — Demo',
     'active',
@@ -293,9 +291,9 @@ begin
   )
   returning id into v_report_rejected_id;
 
-  insert into public.verification_reviews (report_id, verifier_profile_id, decision, notes, decided_at)
+  insert into public.verification_reviews (report_id, verifier_profile_id, decision, reject_reason_category, notes, decided_at)
   values (
-    v_report_rejected_id, v_verifier_profile_id, 'reject',
+    v_report_rejected_id, v_verifier_profile_id, 'reject', 'duplicate_report',
     'Duplikat dari laporan yang sudah terverifikasi pada lokasi yang sama.',
     now() - interval '5 hours 15 minutes'
   );
