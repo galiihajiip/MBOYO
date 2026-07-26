@@ -1,7 +1,7 @@
 # MBOYO — Live Presentation Script & Demo Guide
 
 > **Tagline:** *"Laporan Tetap Jalan. Respons Lebih Tepat."*  
-> **Event:** PIDI Digdaya × Hackathon Bank Indonesia 2026 Capstone  
+> **Event:** VETERAN KUKUS × Hackathon Bank Indonesia 2026 Capstone  
 > **Total Duration:** 7 Minutes (5 Mins Live Demo + 2 Mins Q&A Defense)
 
 ---

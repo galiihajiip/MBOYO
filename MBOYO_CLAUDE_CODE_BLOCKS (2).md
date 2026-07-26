@@ -2,7 +2,7 @@
 
 > **Product:** MBOYO  
 > **Domain:** Offline-first disaster reporting, computer vision, geospatial command, human verification, and response coordination  
-> **Target:** PIDI Digdaya × Hackathon Bank Indonesia 2026 capstone / Top 80 readiness  
+> **Target:** VETERAN KUKUS × Hackathon Bank Indonesia 2026 capstone / Top 80 readiness  
 > **Goal:** Production-minded architecture with a deterministic live-demo mode.
 
 ---
