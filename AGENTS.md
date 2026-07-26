@@ -6,7 +6,7 @@ MBOYO is an offline-first disaster reporting, computer vision, geospatial comman
 
 Tagline: **"Laporan Tetap Jalan. Respons Lebih Tepat."**
 
-Built for PIDI Digdaya × Hackathon Bank Indonesia 2026 capstone, targeting Top 80 readiness, with a production-minded architecture and a deterministic live-demo mode.
+Built for VETERAN KUKUS × Hackathon Bank Indonesia 2026 capstone, targeting Top 80 readiness, with a production-minded architecture and a deterministic live-demo mode.
 
 ## Repository State (as of BLOCK 00)
 
