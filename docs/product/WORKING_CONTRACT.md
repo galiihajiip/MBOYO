@@ -4,7 +4,7 @@
 
 Build an offline-first disaster reporting and response coordination platform that lets Reporters submit incidents without connectivity, lets Verifiers make evidence-based human classification decisions assisted (never overridden) by computer vision, lets Response Coordinators dispatch and track operational response against verified incidents, and gives Auditors an immutable, read-only view of the full lineage — from report to model score to human decision to dispatch.
 
-Target: PIDI Digdaya × Hackathon Bank Indonesia 2026 capstone, Top 80 readiness, with a production-minded architecture and a deterministic live-demo mode.
+Target: VETERAN KUKUS × Hackathon Bank Indonesia 2026 capstone, Top 80 readiness, with a production-minded architecture and a deterministic live-demo mode.
 
 ## Non-Goals
 

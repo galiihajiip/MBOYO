@@ -1,6 +1,6 @@
 # MBOYO — Comprehensive Quality, Accessibility, and PWA Audit Report
 
-> **Target:** PIDI Digdaya × Hackathon Bank Indonesia 2026 capstone / Top 80 readiness  
+> **Target:** VETERAN KUKUS × Hackathon Bank Indonesia 2026 capstone / Top 80 readiness  
 > **Evaluation Date:** 2026-07-22  
 > **Status:** PASSED (Release Gate Qualified)
 

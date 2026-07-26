@@ -85,7 +85,7 @@ Every policy in `20260716153711_rls_policies.sql` is annotated with which row fr
 
 `supabase/seed.sql` seeds:
 
-- One `organizations` row ("PIDI Digdaya Demo").
+- One `organizations` row ("VETERAN KUKUS Demo").
 - One active `disaster_events` row with a real WGS84 geofence polygon over a South Jakarta area.
 - Five demo `auth.users` (one per role) inserted directly (local-dev-only pattern — never done against a hosted project), each with a corresponding `profiles` row and an active `role_assignments` row: Reporter, Verifier, Response Coordinator, System Administrator, Auditor. All demo accounts share the password `mboyo-demo-password`.
 - Two `model_registry_entries`: one promoted/active version with a passing `model_evaluations` row, and one unpromoted release candidate with a `destroyed_recall` deliberately below a plausible release-gate threshold — illustrating the advisory-only fallback path from [SUCCESS_METRICS.md](../product/SUCCESS_METRICS.md).
