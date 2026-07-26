@@ -30,7 +30,7 @@ create function public.submit_verification_decision(
 returns public.reports
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_actor_profile_id uuid;

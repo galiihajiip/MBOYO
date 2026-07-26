@@ -116,7 +116,7 @@ create function public.record_gemini_advisory_request(
 returns public.gemini_advisory_requests
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_actor_profile_id uuid;
