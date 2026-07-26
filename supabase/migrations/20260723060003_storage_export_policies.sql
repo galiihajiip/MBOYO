@@ -44,7 +44,15 @@ create policy generated_exports_bucket_auditor_select on storage.objects
     and public.has_role('auditor')
   );
 
-comment on policy generated_exports_bucket_coordinator_all on storage.objects is
-  'Coordinator may read/write an export object only once its export_jobs row (storage_path = this object''s name) is owned by them — matches export_jobs_coordinator_select_own.';
-comment on policy generated_exports_bucket_auditor_select on storage.objects is
-  'Auditor may read any export object, matching export_jobs_auditor_all_read (org-wide compliance visibility).';
+-- `comment on policy ... on storage.objects` statements were removed here:
+-- Supabase Cloud's migration role doesn't own storage.objects (it's owned
+-- by supabase_storage_admin), so COMMENT ON POLICY fails with "must be
+-- owner of relation objects". These were documentation-only (no RLS/access
+-- effect) — see the policy definitions above for the same information.
+-- generated_exports_bucket_coordinator_all: Coordinator may read/write an
+--   export object only once its export_jobs row (storage_path = this
+--   object's name) is owned by them — matches
+--   export_jobs_coordinator_select_own.
+-- generated_exports_bucket_auditor_select: Auditor may read any export
+--   object, matching export_jobs_auditor_all_read (org-wide compliance
+--   visibility).

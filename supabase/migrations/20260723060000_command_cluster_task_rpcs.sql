@@ -28,7 +28,7 @@ create function public.create_incident_cluster(
 returns public.incident_clusters
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_actor_profile_id uuid;
@@ -106,7 +106,7 @@ create function public.add_reports_to_cluster(
 returns public.incident_clusters
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_cluster public.incident_clusters;
@@ -176,7 +176,7 @@ create function public.create_response_task(
 returns public.response_tasks
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_actor_profile_id uuid;
@@ -260,7 +260,7 @@ create function public.assign_response_task(
 returns public.response_tasks
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_actor_profile_id uuid;
@@ -335,7 +335,7 @@ create function public.transition_response_task_status(
 returns public.response_tasks
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_actor_profile_id uuid;

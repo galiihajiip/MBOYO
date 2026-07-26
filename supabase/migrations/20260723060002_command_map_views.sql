@@ -190,7 +190,7 @@ returns text
 language sql
 stable
 security invoker
-set search_path = public
+set search_path = public, extensions
 as $$
   select st_asgeojson(geofence::geometry)
   from public.disaster_events

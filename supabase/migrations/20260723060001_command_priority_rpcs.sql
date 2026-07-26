@@ -16,7 +16,7 @@ create function public.set_response_task_priority(
 returns public.response_tasks
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_task public.response_tasks;
@@ -68,7 +68,7 @@ create function public.set_incident_cluster_priority(
 returns public.incident_clusters
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_cluster public.incident_clusters;
