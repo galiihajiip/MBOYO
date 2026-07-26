@@ -25,7 +25,7 @@ create function public.evaluate_escalations(p_organization_id uuid)
 returns integer
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_notifications_raised integer := 0;

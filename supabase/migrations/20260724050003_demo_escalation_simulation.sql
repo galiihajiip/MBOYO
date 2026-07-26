@@ -26,7 +26,7 @@ create function public.simulate_verified_destroyed_report(
 returns public.reports
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_actor_profile_id uuid;
@@ -126,7 +126,7 @@ create function public.simulate_cluster_destroyed_escalation(
 returns setof public.reports
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_organization_id uuid;

@@ -45,7 +45,7 @@ create function public.create_notification(
 returns setof public.notifications
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 begin
   if p_level not in ('info', 'warning', 'high', 'critical') then
@@ -89,7 +89,7 @@ create function public.mark_notification_read(p_notification_id uuid)
 returns public.notifications
 language plpgsql
 security invoker
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_row public.notifications;
