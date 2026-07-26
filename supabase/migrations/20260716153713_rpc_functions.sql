@@ -26,7 +26,7 @@ returns setof public.reports
 language sql
 stable
 security invoker
-set search_path = public
+set search_path = public, extensions
 as $$
   select distinct r.*
   from public.reports r
@@ -62,7 +62,7 @@ returns table (
 language sql
 stable
 security invoker
-set search_path = public
+set search_path = public, extensions
 as $$
   select
     r.id as report_id,
@@ -102,7 +102,7 @@ returns table (
 language sql
 stable
 security invoker
-set search_path = public
+set search_path = public, extensions
 as $$
   with destroyed as (
     select
@@ -149,7 +149,7 @@ create function public.claim_analysis_jobs(
 returns setof public.analysis_jobs
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 begin
   -- Explicit internal guard: this is SECURITY DEFINER (it must be, since no
@@ -215,7 +215,7 @@ create function public.append_audit_event(
 returns public.audit_events
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_actor_profile_id uuid;

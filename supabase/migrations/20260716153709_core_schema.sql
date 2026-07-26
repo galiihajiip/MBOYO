@@ -12,6 +12,14 @@
 
 create extension if not exists pgcrypto;
 
+-- Cloud projects don't always default this migration role's session
+-- search_path to include `extensions` the way local Supabase's bootstrap
+-- does — without this, every unqualified `geography`/`geometry` column
+-- type reference below fails with "type does not exist" (PostGIS types
+-- live in extensions, not public). Local dev is unaffected since it
+-- already has this on the role.
+set search_path = public, extensions;
+
 -- ============================================================================
 -- ENUMS
 -- ============================================================================
