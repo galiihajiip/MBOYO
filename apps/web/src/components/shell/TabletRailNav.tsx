@@ -11,8 +11,21 @@ export interface TabletRailNavProps {
   items: NavItem[];
 }
 
-function isActive(pathname: string, href: string): boolean {
-  return pathname === href || pathname.startsWith(`${href}/`);
+/**
+ * See SidebarNav.tsx's identical helper for the full rationale: a naive
+ * per-item prefix match marks every href that's a path segment of the
+ * current URL as active simultaneously — only the longest matching href
+ * should highlight.
+ */
+function resolveActiveHref(pathname: string, items: { href: string }[]): string | null {
+  let best: string | null = null;
+  for (const item of items) {
+    const matches = pathname === item.href || pathname.startsWith(`${item.href}/`);
+    if (matches && (best === null || item.href.length > best.length)) {
+      best = item.href;
+    }
+  }
+  return best;
 }
 
 /**
@@ -25,6 +38,7 @@ function isActive(pathname: string, href: string): boolean {
 export function TabletRailNav({ items }: TabletRailNavProps) {
   const pathname = usePathname();
   const [expanded, setExpanded] = useState(false);
+  const activeHref = resolveActiveHref(pathname, items);
 
   return (
     <nav
@@ -54,7 +68,7 @@ export function TabletRailNav({ items }: TabletRailNavProps) {
         </button>
 
         {items.map((item) => {
-          const active = isActive(pathname, item.href);
+          const active = item.href === activeHref;
           return (
             <Link
               key={item.href}

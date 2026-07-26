@@ -68,7 +68,7 @@ export function AppShell({ role, displayName, breadcrumbs, children }: AppShellP
         <TabletRailNav items={items} />
 
         <aside className="hidden w-[280px] shrink-0 border-r border-brand-border bg-surface-container-lowest lg:block">
-          <SidebarNav items={items} />
+          <SidebarNav items={items} role={role} />
         </aside>
 
         <main className="flex-1 overflow-x-hidden px-4 pb-24 pt-4 sm:px-6 lg:px-10 lg:pb-10">
