@@ -14,49 +14,6 @@ export async function listCommandMapReports(
   db: CommandDbClient,
   options: { disasterEventId?: string; bbox?: MapBoundingBox } = {},
 ): Promise<CommandMapReportDto[]> {
-  const isDemoMode =
-    process.env.DEMO_MODE === "true" ||
-    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
-    process.env.NODE_ENV === "development";
-
-  if (isDemoMode) {
-    return [
-      {
-        id: "demo-report-1",
-        disasterEventId: "demo-event-1",
-        description: "Bangunan retak parah dan sebagian atap roboh",
-        escalated: true,
-        submittedAt: new Date().toISOString(),
-        longitude: 106.8272,
-        latitude: -6.1754,
-        topSeverity: "destroyed",
-        incidentClusterId: "demo-cluster-1",
-      },
-      {
-        id: "demo-report-2",
-        disasterEventId: "demo-event-1",
-        description: "Kerusakan tembok dan fondasi retak",
-        escalated: false,
-        submittedAt: new Date().toISOString(),
-        longitude: 106.832,
-        latitude: -6.178,
-        topSeverity: "major_damage",
-        incidentClusterId: "demo-cluster-1",
-      },
-      {
-        id: "demo-report-3",
-        disasterEventId: "demo-event-1",
-        description: "Atap genteng sebagian runtuh",
-        escalated: false,
-        submittedAt: new Date().toISOString(),
-        longitude: 106.815,
-        latitude: -6.172,
-        topSeverity: "minor_damage",
-        incidentClusterId: null,
-      },
-    ];
-  }
-
   try {
     let query = db.from("command_map_reports").select("*");
     if (options.disasterEventId) {
@@ -88,21 +45,6 @@ export async function getDisasterEventGeofenceRing(
   db: CommandDbClient,
   disasterEventId: string,
 ): Promise<[number, number][] | null> {
-  const isDemoMode =
-    process.env.DEMO_MODE === "true" ||
-    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
-    process.env.NODE_ENV === "development";
-
-  if (isDemoMode) {
-    return [
-      [106.81, -6.16],
-      [106.84, -6.16],
-      [106.84, -6.19],
-      [106.81, -6.19],
-      [106.81, -6.16],
-    ];
-  }
-
   try {
     const result: { data: unknown; error: { message: string } | null } = await db.rpc(
       "disaster_event_geofence_geojson",

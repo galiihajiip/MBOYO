@@ -31,23 +31,6 @@ export async function createExportJob(
   requestedByProfileId: string,
   input: CreateExportJobInput,
 ): Promise<ExportJobDto> {
-  const isDemoMode =
-    process.env.DEMO_MODE === "true" ||
-    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
-    process.env.NODE_ENV === "development";
-
-  if (isDemoMode) {
-    return {
-      id: `demo-export-${Date.now()}`,
-      disasterEventId: input.disasterEventId,
-      format: input.format,
-      status: "done",
-      createdAt: new Date().toISOString(),
-      completedAt: new Date().toISOString(),
-      signedUrl: "https://example.com/demo-export-file.geojson",
-    };
-  }
-
   const { data: job, error: insertError } = await db
     .from("export_jobs")
     .insert({
@@ -76,34 +59,6 @@ export async function createExportJob(
 }
 
 export async function listExportJobs(db: CommandDbClient): Promise<ExportJobDto[]> {
-  const isDemoMode =
-    process.env.DEMO_MODE === "true" ||
-    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
-    process.env.NODE_ENV === "development";
-
-  if (isDemoMode) {
-    return [
-      {
-        id: "demo-export-1",
-        disasterEventId: "demo-event-1",
-        format: "geojson",
-        status: "done",
-        createdAt: new Date().toISOString(),
-        completedAt: new Date().toISOString(),
-        signedUrl: "https://example.com/demo-export-1.geojson",
-      },
-      {
-        id: "demo-export-2",
-        disasterEventId: "demo-event-1",
-        format: "csv",
-        status: "done",
-        createdAt: new Date(Date.now() - 3600000).toISOString(),
-        completedAt: new Date(Date.now() - 3600000).toISOString(),
-        signedUrl: "https://example.com/demo-export-2.csv",
-      },
-    ];
-  }
-
   try {
     const { data, error } = await db
       .from("export_jobs")

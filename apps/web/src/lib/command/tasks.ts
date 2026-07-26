@@ -1,5 +1,5 @@
 import "server-only";
-import type { CreateResponseTaskInput, PaginationRequest, PaginatedResult, ResponseTaskFilters, TaskStatus, TaskPriority } from "@mboyo/domain";
+import type { CreateResponseTaskInput, PaginationRequest, PaginatedResult, TaskListFilters, TaskStatus, PriorityLevel } from "@mboyo/domain";
 import { buildPaginatedResult } from "@mboyo/domain";
 import { ApiError } from "../api/errors";
 import type { CommandDbClient, ResponseTaskDto, ResponseTaskRow, TaskAssignmentDto, TaskAssignmentRow } from "./types";
@@ -9,28 +9,6 @@ export async function createResponseTask(
   db: CommandDbClient,
   input: CreateResponseTaskInput,
 ): Promise<ResponseTaskDto> {
-  const isDemoMode =
-    process.env.DEMO_MODE === "true" ||
-    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
-    process.env.NODE_ENV === "development";
-
-  if (isDemoMode) {
-    return {
-      id: `demo-task-${Date.now()}`,
-      reportId: input.reportId ?? null,
-      incidentClusterId: input.incidentClusterId ?? null,
-      status: "assigned",
-      priority: input.priority,
-      createdByProfileId: "demo-coordinator",
-      category: input.category,
-      description: input.description,
-      dueAt: input.dueAt ?? null,
-      resources: input.resources ?? null,
-      createdAt: new Date().toISOString(),
-      closedAt: null,
-    };
-  }
-
   const { data, error } = await db
     .rpc("create_response_task", {
       p_report_id: input.reportId ?? null,
@@ -52,54 +30,13 @@ export async function createResponseTask(
 
 export async function listResponseTasks(
   db: CommandDbClient,
-  filters: ResponseTaskFilters,
+  filters: TaskListFilters,
   pagination: PaginationRequest,
 ): Promise<PaginatedResult<ResponseTaskDto>> {
-  const isDemoMode =
-    process.env.DEMO_MODE === "true" ||
-    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
-    process.env.NODE_ENV === "development";
-
-  if (isDemoMode) {
-    const demoItems: ResponseTaskDto[] = [
-      {
-        id: "demo-task-1",
-        reportId: "demo-report-1",
-        incidentClusterId: "demo-cluster-1",
-        status: "in_progress",
-        priority: "critical",
-        createdByProfileId: "demo-coordinator",
-        category: "Evakuasi Korban & Pembersihan Reruntuhan",
-        description: "Kirimkan tim alat berat dan ambulance ke lokasi sektor barat",
-        dueAt: new Date(Date.now() + 86400000).toISOString(),
-        resources: "1 Unit Excavator, 2 Unit Ambulance, 5 Personel SAR",
-        createdAt: new Date().toISOString(),
-        closedAt: null,
-      },
-      {
-        id: "demo-task-2",
-        reportId: "demo-report-2",
-        incidentClusterId: "demo-cluster-2",
-        status: "assigned",
-        priority: "high",
-        createdByProfileId: "demo-coordinator",
-        category: "Distribusi Logistik & Tenda Pengungsian",
-        description: "Pengiriman 50 paket sembako dan tenda darurat",
-        dueAt: new Date(Date.now() + 172800000).toISOString(),
-        resources: "50 Paket Sembako, 10 Tenda",
-        createdAt: new Date().toISOString(),
-        closedAt: null,
-      },
-    ];
-
-    return buildPaginatedResult(demoItems, demoItems.length, pagination);
-  }
-
   try {
     let query = db.from("response_tasks").select("*", { count: "exact" });
     if (filters.status) query = query.eq("status", filters.status);
     if (filters.priority) query = query.eq("priority", filters.priority);
-    if (filters.search) query = query.ilike("description", `%${filters.search}%`);
 
     const from = (pagination.page - 1) * pagination.pageSize;
     const to = from + pagination.pageSize - 1;
@@ -118,28 +55,6 @@ export async function listResponseTasks(
 }
 
 export async function getResponseTaskById(db: CommandDbClient, taskId: string): Promise<ResponseTaskDto> {
-  const isDemoMode =
-    process.env.DEMO_MODE === "true" ||
-    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
-    process.env.NODE_ENV === "development";
-
-  if (isDemoMode) {
-    return {
-      id: taskId,
-      reportId: "demo-report-1",
-      incidentClusterId: "demo-cluster-1",
-      status: "in_progress",
-      priority: "critical",
-      createdByProfileId: "demo-coordinator",
-      category: "Evakuasi Korban",
-      description: "Tugas respons tim lapangan sektor barat",
-      dueAt: new Date(Date.now() + 86400000).toISOString(),
-      resources: "2 Unit Tim SAR",
-      createdAt: new Date().toISOString(),
-      closedAt: null,
-    };
-  }
-
   try {
     const { data } = await db.from("response_tasks").select("*").eq("id", taskId).maybeSingle<ResponseTaskRow>();
     if (data) {
@@ -155,23 +70,7 @@ export async function assignResponseTask(
   taskId: string,
   input: { assigneeProfileId?: string; assignedProfileId?: string; notes?: string },
 ): Promise<TaskAssignmentDto> {
-  const isDemoMode =
-    process.env.DEMO_MODE === "true" ||
-    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
-    process.env.NODE_ENV === "development";
-
   const targetProfileId = input.assigneeProfileId ?? input.assignedProfileId ?? "";
-
-  if (isDemoMode) {
-    return {
-      id: `demo-assignment-${Date.now()}`,
-      taskId,
-      assignedProfileId: targetProfileId,
-      status: "assigned",
-      assignedAt: new Date().toISOString(),
-      notes: input.notes ?? null,
-    };
-  }
 
   const { data, error } = await db
     .from("task_assignments")
@@ -193,18 +92,8 @@ export async function assignResponseTask(
 export async function setResponseTaskPriority(
   db: CommandDbClient,
   taskId: string,
-  priority: TaskPriority,
+  priority: PriorityLevel,
 ): Promise<ResponseTaskDto> {
-  const isDemoMode =
-    process.env.DEMO_MODE === "true" ||
-    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
-    process.env.NODE_ENV === "development";
-
-  if (isDemoMode) {
-    const task = await getResponseTaskById(db, taskId);
-    return { ...task, priority };
-  }
-
   const { data, error } = await db
     .from("response_tasks")
     .update({ priority })
@@ -224,16 +113,6 @@ export async function transitionResponseTaskStatus(
   taskId: string,
   status: TaskStatus,
 ): Promise<ResponseTaskDto> {
-  const isDemoMode =
-    process.env.DEMO_MODE === "true" ||
-    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
-    process.env.NODE_ENV === "development";
-
-  if (isDemoMode) {
-    const task = await getResponseTaskById(db, taskId);
-    return { ...task, status };
-  }
-
   const { data, error } = await db
     .from("response_tasks")
     .update({ status })
@@ -249,24 +128,6 @@ export async function transitionResponseTaskStatus(
 }
 
 export async function listTaskAssignments(db: CommandDbClient, taskId: string): Promise<TaskAssignmentDto[]> {
-  const isDemoMode =
-    process.env.DEMO_MODE === "true" ||
-    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
-    process.env.NODE_ENV === "development";
-
-  if (isDemoMode) {
-    return [
-      {
-        id: `demo-assignment-${taskId}`,
-        taskId,
-        assignedProfileId: "demo-verifier",
-        status: "assigned",
-        assignedAt: new Date().toISOString(),
-        notes: "Tim ditugaskan menuju lokasi",
-      },
-    ];
-  }
-
   try {
     const { data, error } = await db
       .from("task_assignments")

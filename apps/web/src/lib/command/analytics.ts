@@ -20,19 +20,6 @@ export interface AnalyticsBreakdown {
 }
 
 export async function getIncidentAnalytics(db: CommandDbClient): Promise<AnalyticsBreakdown> {
-  const isDemoMode =
-    process.env.DEMO_MODE === "true" ||
-    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
-    process.env.NODE_ENV === "development";
-
-  if (isDemoMode) {
-    return {
-      bySeverity: { destroyed: 12, major_damage: 18, minor_damage: 8, no_damage: 4 },
-      byStatus: { verified: 28, needs_manual_review: 8, analysis_completed: 6 },
-      byRegion: [{ disasterEventId: "demo-event-1", name: "Gempa Jawa Barat 2026", count: 42 }],
-    };
-  }
-
   try {
     const { data: severityRows, error: severityError } = await db
       .from("command_map_reports")
@@ -84,15 +71,6 @@ interface ResponseTaskTimingRow {
 }
 
 export async function getResponseSlaSummary(db: CommandDbClient): Promise<ResponseSlaSummary> {
-  const isDemoMode =
-    process.env.DEMO_MODE === "true" ||
-    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
-    process.env.NODE_ENV === "development";
-
-  if (isDemoMode) {
-    return { medianResponseTimeSeconds: 1440, overdueCount: 1, onTimeCompletedCount: 15 };
-  }
-
   try {
     const { data, error } = await db
       .from("response_tasks")
@@ -132,22 +110,6 @@ interface ReportSubmittedAtRow {
 }
 
 export async function getSubmissionTimeline(db: CommandDbClient, days = 14): Promise<TimelinePoint[]> {
-  const isDemoMode =
-    process.env.DEMO_MODE === "true" ||
-    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
-    process.env.NODE_ENV === "development";
-
-  if (isDemoMode) {
-    const points: TimelinePoint[] = [];
-    for (let i = days - 1; i >= 0; i--) {
-      const date = new Date();
-      date.setDate(date.getDate() - i);
-      const key = date.toISOString().slice(0, 10);
-      points.push({ date: key, count: Math.floor(Math.random() * 10) + 2 });
-    }
-    return points;
-  }
-
   const since = new Date();
   since.setDate(since.getDate() - days);
 
