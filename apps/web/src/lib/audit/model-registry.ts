@@ -24,25 +24,6 @@ export interface ModelRegistryEntryDto {
 }
 
 export async function listModelRegistryEntries(db: CommandDbClient): Promise<ModelRegistryEntryDto[]> {
-  const isDemoMode =
-    process.env.DEMO_MODE === "true" ||
-    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
-    process.env.NODE_ENV === "development";
-
-  if (isDemoMode) {
-    return [
-      {
-        id: "demo-model-v1",
-        version: "v1.0.0-mobile-net-v3",
-        artifactPath: "models/v1.0.0-mobile-net-v3.onnx",
-        trainedAt: new Date().toISOString(),
-        promotedAt: new Date().toISOString(),
-        isActive: true,
-        createdAt: new Date().toISOString(),
-      },
-    ];
-  }
-
   try {
     const { data, error } = await db
       .from("model_registry_entries")
@@ -89,26 +70,6 @@ export interface ModelEvaluationDto {
 }
 
 export async function listModelEvaluations(db: CommandDbClient): Promise<ModelEvaluationDto[]> {
-  const isDemoMode =
-    process.env.DEMO_MODE === "true" ||
-    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
-    process.env.NODE_ENV === "development";
-
-  if (isDemoMode) {
-    return [
-      {
-        id: "demo-eval-1",
-        modelRegistryEntryId: "demo-model-v1",
-        datasetIdentity: "test-set-jabar-2026",
-        macroF1: 0.89,
-        destroyedRecall: 0.94,
-        calibrationError: 0.03,
-        evaluatedAt: new Date().toISOString(),
-        reportPath: "reports/eval-v1.0.0.pdf",
-      },
-    ];
-  }
-
   try {
     const { data, error } = await db
       .from("model_evaluations")
@@ -138,22 +99,6 @@ interface ModelPredictionCountRow {
 }
 
 export async function getModelUsageSummary(db: CommandDbClient): Promise<ModelUsageSummary[]> {
-  const isDemoMode =
-    process.env.DEMO_MODE === "true" ||
-    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
-    process.env.NODE_ENV === "development";
-
-  if (isDemoMode) {
-    return [
-      {
-        modelRegistryEntryId: "demo-model-v1",
-        version: "v1.0.0-mobile-net-v3",
-        isActive: true,
-        predictionCount: 154,
-      },
-    ];
-  }
-
   try {
     const [entriesResult, jobsResult] = await Promise.all([
       db.from("model_registry_entries").select("id, version, is_active").returns<{ id: string; version: string; is_active: boolean }[]>(),
@@ -184,21 +129,6 @@ interface GeminiRequestStatusRow {
 }
 
 export async function getGeminiUsageSummary(db: CommandDbClient): Promise<GeminiUsageSummary> {
-  const isDemoMode =
-    process.env.DEMO_MODE === "true" ||
-    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
-    process.env.NODE_ENV === "development";
-
-  if (isDemoMode) {
-    return {
-      totalRequests: 12,
-      succeededCount: 12,
-      failedCount: 0,
-      timedOutCount: 0,
-      rateLimitedCount: 0,
-    };
-  }
-
   try {
     const { data, error } = await db.from("gemini_advisory_requests").select("status").returns<GeminiRequestStatusRow[]>();
 
