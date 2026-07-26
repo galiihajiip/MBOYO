@@ -17,7 +17,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     const { taskId } = await params;
     const body: unknown = await request.json().catch(() => null);
     const input = setPrioritySchema.parse(body);
-    const task = await setResponseTaskPriority(supabase, taskId, input);
+    const task = await setResponseTaskPriority(supabase, taskId, input.priority);
     return respondOk({ task }, requestId, 200);
   } catch (error) {
     return respondError(error, requestId);

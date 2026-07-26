@@ -27,7 +27,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     const { taskId } = await params;
     const body: unknown = await request.json().catch(() => null);
     const input = transitionResponseTaskStatusSchema.parse(body);
-    const task = await transitionResponseTaskStatus(supabase, taskId, input);
+    const task = await transitionResponseTaskStatus(supabase, taskId, input.newStatus);
     return respondOk({ task }, requestId, 200);
   } catch (error) {
     return respondError(error, requestId);
