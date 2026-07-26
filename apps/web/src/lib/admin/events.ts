@@ -33,24 +33,6 @@ function toDisasterEventDto(row: DisasterEventRow): DisasterEventDto {
 }
 
 export async function listDisasterEvents(db: CommandDbClient): Promise<DisasterEventDto[]> {
-  const isDemoMode =
-    process.env.DEMO_MODE === "true" ||
-    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
-    process.env.NODE_ENV === "development";
-
-  if (isDemoMode) {
-    return [
-      {
-        id: "demo-event-1",
-        organizationId: "demo-org-1",
-        name: "Gempa Bumi & Tanah Longsor Jawa Barat 2026",
-        status: "active",
-        startsAt: new Date().toISOString(),
-        endsAt: null,
-      },
-    ];
-  }
-
   try {
     const { data, error } = await db
       .from("disaster_events")
@@ -67,22 +49,6 @@ export async function listDisasterEvents(db: CommandDbClient): Promise<DisasterE
 }
 
 export async function createDisasterEvent(db: CommandDbClient, input: CreateDisasterEventInput): Promise<DisasterEventDto> {
-  const isDemoMode =
-    process.env.DEMO_MODE === "true" ||
-    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
-    process.env.NODE_ENV === "development";
-
-  if (isDemoMode) {
-    return {
-      id: `demo-event-${Date.now()}`,
-      organizationId: "demo-org-1",
-      name: input.name,
-      status: "active",
-      startsAt: input.startsAt ?? new Date().toISOString(),
-      endsAt: null,
-    };
-  }
-
   const { data, error } = await db
     .rpc("create_disaster_event", {
       p_name: input.name,
@@ -103,22 +69,6 @@ export async function updateDisasterEvent(
   disasterEventId: string,
   input: UpdateDisasterEventInput,
 ): Promise<DisasterEventDto> {
-  const isDemoMode =
-    process.env.DEMO_MODE === "true" ||
-    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
-    process.env.NODE_ENV === "development";
-
-  if (isDemoMode) {
-    return {
-      id: disasterEventId,
-      organizationId: "demo-org-1",
-      name: input.name ?? "Gempa Bumi & Tanah Longsor Jawa Barat 2026",
-      status: input.status ?? "active",
-      startsAt: new Date().toISOString(),
-      endsAt: input.endsAt ?? null,
-    };
-  }
-
   const { data, error } = await db
     .rpc("update_disaster_event", {
       p_disaster_event_id: disasterEventId,

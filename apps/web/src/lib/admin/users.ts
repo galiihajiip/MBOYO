@@ -28,51 +28,6 @@ export interface UserWithRolesDto {
 }
 
 export async function listUsersWithRoles(db: CommandDbClient): Promise<UserWithRolesDto[]> {
-  const isDemoMode =
-    process.env.DEMO_MODE === "true" ||
-    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
-    process.env.NODE_ENV === "development";
-
-  if (isDemoMode) {
-    return [
-      {
-        profileId: "demo-reporter",
-        displayName: "Warga Pelapor Demo",
-        phone: "08123456789",
-        createdAt: new Date().toISOString(),
-        roles: ["reporter"],
-      },
-      {
-        profileId: "demo-verifier",
-        displayName: "Petugas Verifikator Demo",
-        phone: "08129876543",
-        createdAt: new Date().toISOString(),
-        roles: ["verifier"],
-      },
-      {
-        profileId: "demo-coordinator",
-        displayName: "Koordinator Respons Demo",
-        phone: "08135555666",
-        createdAt: new Date().toISOString(),
-        roles: ["response_coordinator"],
-      },
-      {
-        profileId: "demo-admin",
-        displayName: "Administrator Sistem Demo",
-        phone: "08112223334",
-        createdAt: new Date().toISOString(),
-        roles: ["system_administrator"],
-      },
-      {
-        profileId: "demo-auditor",
-        displayName: "Auditor Independen Demo",
-        phone: "08199990000",
-        createdAt: new Date().toISOString(),
-        roles: ["auditor"],
-      },
-    ];
-  }
-
   try {
     const { data: profiles, error: profilesError } = await db
       .from("profiles")
@@ -108,25 +63,11 @@ export async function listUsersWithRoles(db: CommandDbClient): Promise<UserWithR
 }
 
 export async function grantRole(db: CommandDbClient, input: GrantRoleInput): Promise<void> {
-  const isDemoMode =
-    process.env.DEMO_MODE === "true" ||
-    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
-    process.env.NODE_ENV === "development";
-
-  if (isDemoMode) return;
-
   const { error } = await db.rpc("grant_role", { p_profile_id: input.profileId, p_role: input.role });
   if (error) throw new ApiError("internal_error", "Gagal memberikan peran.");
 }
 
 export async function revokeRole(db: CommandDbClient, input: RevokeRoleInput): Promise<void> {
-  const isDemoMode =
-    process.env.DEMO_MODE === "true" ||
-    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
-    process.env.NODE_ENV === "development";
-
-  if (isDemoMode) return;
-
   const { error } = await db.rpc("revoke_role", { p_profile_id: input.profileId, p_role: input.role });
   if (error) throw new ApiError("internal_error", "Gagal mencabut peran.");
 }

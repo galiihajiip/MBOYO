@@ -47,24 +47,6 @@ function median(values: number[]): number | null {
 }
 
 export async function getServiceHealthSummary(db: CommandDbClient): Promise<ServiceHealthSummary> {
-  const isDemoMode =
-    process.env.DEMO_MODE === "true" ||
-    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
-    process.env.NODE_ENV === "development";
-
-  if (isDemoMode) {
-    return {
-      analysisJobsQueued: 0,
-      analysisJobsProcessing: 1,
-      analysisJobsFailed: 0,
-      recentFailures: [],
-      medianJobDurationSeconds: 1.2,
-      medianModelLatencyMs: 450,
-      escalationCount7d: 2,
-      evidenceDownloadFailureCount7d: 0,
-    };
-  }
-
   const windowStart = new Date(Date.now() - METRICS_WINDOW_DAYS * 24 * 60 * 60 * 1000).toISOString();
 
   try {
@@ -155,18 +137,6 @@ export async function getServiceHealthSummary(db: CommandDbClient): Promise<Serv
 }
 
 export async function getStorageUsageSummaries(db: CommandDbClient): Promise<StorageUsageSummary[]> {
-  const isDemoMode =
-    process.env.DEMO_MODE === "true" ||
-    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
-    process.env.NODE_ENV === "development";
-
-  if (isDemoMode) {
-    return [
-      { bucket: "report-evidence", objectCount: 42, totalBytes: 45200000 },
-      { bucket: "generated-exports", objectCount: 5, totalBytes: 2100000 },
-    ];
-  }
-
   const env = getServerEnv();
   const buckets = [env.SUPABASE_REPORTS_BUCKET, env.SUPABASE_EXPORTS_BUCKET];
 
@@ -209,15 +179,6 @@ interface RoleAssignmentCountRow {
 }
 
 export async function getUserActivitySummary(db: CommandDbClient): Promise<UserActivitySummary[]> {
-  const isDemoMode =
-    process.env.DEMO_MODE === "true" ||
-    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
-    process.env.NODE_ENV === "development";
-
-  if (isDemoMode) {
-    return ROLES.map((role) => ({ role, activeUserCount: 1 }));
-  }
-
   try {
     const { data, error } = await db
       .from("role_assignments")
@@ -244,19 +205,6 @@ interface GeminiRequestRow {
 }
 
 export async function getIntegrationUsageSummary(db: CommandDbClient): Promise<IntegrationUsageSummary> {
-  const isDemoMode =
-    process.env.DEMO_MODE === "true" ||
-    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
-    process.env.NODE_ENV === "development";
-
-  if (isDemoMode) {
-    return {
-      geminiRequestCount: 12,
-      geminiSuccessCount: 12,
-      pushSubscriptionCount: 3,
-    };
-  }
-
   try {
     const [geminiResult, pushResult] = await Promise.all([
       db.from("gemini_advisory_requests").select("status").returns<GeminiRequestRow[]>(),
