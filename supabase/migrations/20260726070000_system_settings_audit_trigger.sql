@@ -15,7 +15,7 @@ create function public.audit_system_settings_change()
 returns trigger
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 begin
   if (tg_op = 'UPDATE') then

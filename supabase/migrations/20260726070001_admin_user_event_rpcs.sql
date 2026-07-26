@@ -25,7 +25,7 @@ create function public.grant_role(
 returns public.role_assignments
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_actor_profile_id uuid;
@@ -81,7 +81,7 @@ create function public.revoke_role(
 returns public.role_assignments
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_row public.role_assignments;
@@ -129,7 +129,7 @@ create function public.create_disaster_event(
 returns public.disaster_events
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_actor_profile_id uuid;
@@ -179,7 +179,7 @@ create function public.update_disaster_event(
 returns public.disaster_events
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_row public.disaster_events;

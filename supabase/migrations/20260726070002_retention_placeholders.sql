@@ -119,7 +119,7 @@ create function public.review_deletion_request(
 returns public.deletion_requests
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_actor_profile_id uuid;
@@ -206,7 +206,7 @@ create function public.place_legal_hold(
 returns public.legal_holds
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_actor_profile_id uuid;
@@ -245,7 +245,7 @@ create function public.release_legal_hold(p_legal_hold_id uuid)
 returns public.legal_holds
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_actor_profile_id uuid;
