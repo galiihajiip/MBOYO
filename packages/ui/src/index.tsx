@@ -31,3 +31,5 @@ export * from "./primitives/ProbabilityBars";
 export * from "./primitives/Timeline";
 export * from "./primitives/NotificationCard";
 export * from "./primitives/BarChart";
+
+export * from "./primitives/icons/Basic";
