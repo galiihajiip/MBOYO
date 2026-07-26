@@ -15,6 +15,8 @@ export interface DataTableProps<T> {
   getRowKey: (row: T) => string;
   className?: string;
   onRowClick?: (row: T) => void;
+  /** Row key to visually highlight as selected/active (e.g. the row whose detail panel is open). */
+  selectedRowKey?: string;
 }
 
 /**
@@ -31,6 +33,7 @@ export function DataTable<T>({
   getRowKey,
   className,
   onRowClick,
+  selectedRowKey,
 }: DataTableProps<T>) {
   return (
     <div className={cn("overflow-x-auto rounded-lg border border-brand-border", className)}>
@@ -59,6 +62,7 @@ export function DataTable<T>({
               className={cn(
                 "border-b border-brand-border last:border-b-0",
                 onRowClick && "cursor-pointer hover:bg-brand-mist",
+                selectedRowKey !== undefined && getRowKey(row) === selectedRowKey && "bg-brand-signal-cyan/10",
               )}
             >
               {columns.map((column) => (
