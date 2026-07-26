@@ -22,31 +22,6 @@ export async function listEscalationSettings(
   db: NotificationsDbClient,
   organizationId: string,
 ): Promise<EscalationSettingDto[]> {
-  const isDemoMode =
-    process.env.DEMO_MODE === "true" ||
-    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
-    process.env.NODE_ENV === "development";
-
-  if (isDemoMode) {
-    return [
-      {
-        ruleType: "unverified_high_severity",
-        value: { maxAgeHours: 2, targetRole: "verifier" },
-        updatedAt: new Date().toISOString(),
-      },
-      {
-        ruleType: "unassigned_critical_cluster",
-        value: { maxAgeHours: 1, targetRole: "response_coordinator" },
-        updatedAt: new Date().toISOString(),
-      },
-      {
-        ruleType: "unassigned_high_priority_task",
-        value: { maxAgeHours: 4, targetRole: "response_coordinator" },
-        updatedAt: new Date().toISOString(),
-      },
-    ];
-  }
-
   try {
     const { data, error } = await db
       .from("system_settings")
@@ -78,15 +53,6 @@ export async function updateEscalationSetting(
   ruleType: EscalationRuleType,
   value: Record<string, unknown>,
 ): Promise<EscalationSettingDto> {
-  const isDemoMode =
-    process.env.DEMO_MODE === "true" ||
-    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
-    process.env.NODE_ENV === "development";
-
-  if (isDemoMode) {
-    return { ruleType, value, updatedAt: new Date().toISOString() };
-  }
-
   const schema = escalationSettingSchemas[ruleType];
   const parsed = schema.safeParse(value);
   if (!parsed.success) {

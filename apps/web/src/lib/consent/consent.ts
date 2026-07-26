@@ -22,23 +22,6 @@ interface ConsentRecordRow {
 }
 
 export async function getConsentStatus(db: CommandDbClient, profileId: string): Promise<ConsentStatusDto[]> {
-  const isDemoMode =
-    process.env.DEMO_MODE === "true" ||
-    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
-    process.env.NODE_ENV === "development";
-
-  if (isDemoMode) {
-    return [
-      {
-        documentKey: "privacy_notice",
-        currentVersion: CURRENT_CONSENT_VERSIONS.privacy_notice,
-        acceptedVersion: CURRENT_CONSENT_VERSIONS.privacy_notice,
-        acceptedAt: new Date().toISOString(),
-        needsConsent: false,
-      },
-    ];
-  }
-
   try {
     const { data, error } = await db
       .from("consent_records")
@@ -76,19 +59,6 @@ export async function recordConsent(
   db: CommandDbClient,
   documentKey: ConsentDocumentKey,
 ): Promise<ConsentRecordRow> {
-  const isDemoMode =
-    process.env.DEMO_MODE === "true" ||
-    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
-    process.env.NODE_ENV === "development";
-
-  if (isDemoMode) {
-    return {
-      document_key: documentKey,
-      version: CURRENT_CONSENT_VERSIONS[documentKey],
-      accepted_at: new Date().toISOString(),
-    };
-  }
-
   const version = CURRENT_CONSENT_VERSIONS[documentKey];
   const { data, error } = await db
     .rpc("record_consent", { p_document_key: documentKey, p_version: version })
