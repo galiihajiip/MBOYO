@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { headers, cookies } from "next/headers";
+import { headers } from "next/headers";
 import { z } from "zod";
 import type { Role } from "@mboyo/domain";
 import { createServerSupabaseClient } from "../../../lib/supabase/server";
@@ -37,41 +37,6 @@ export async function signInAction(_prevState: SignInState, formData: FormData):
   );
   if (!rateLimit.allowed) {
     return { error: "Terlalu banyak percobaan masuk. Coba lagi sebentar lagi." };
-  }
-
-  const email = parsed.data.email.toLowerCase();
-  const isDemoEmail = email.endsWith("@mboyo.demo");
-  const isDemoMode =
-    process.env.DEMO_MODE === "true" ||
-    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
-    process.env.NODE_ENV === "development";
-
-  // Fast path for demo accounts: instantly sign in without waiting for socket timeout
-  if (isDemoMode && (isDemoEmail || parsed.data.password === "DemoMboyo2026!")) {
-    let role: Role = "reporter";
-    let dest = "/reporter";
-
-    if (email.includes("verifier")) {
-      role = "verifier";
-      dest = "/verifier";
-    } else if (email.includes("coordinator")) {
-      role = "response_coordinator";
-      dest = "/command";
-    } else if (email.includes("admin")) {
-      role = "system_administrator";
-      dest = "/admin";
-    } else if (email.includes("auditor")) {
-      role = "auditor";
-      dest = "/audit";
-    }
-
-    const cookieStore = await cookies();
-    cookieStore.set("mboyo_demo_role", role, { path: "/", httpOnly: true, sameSite: "lax" });
-    cookieStore.set("mboyo_demo_email", email, { path: "/", httpOnly: true, sameSite: "lax" });
-
-    const destination =
-      (parsed.data.next && parsed.data.next.startsWith("/") ? parsed.data.next : null) ?? dest;
-    redirect(destination);
   }
 
   try {
@@ -113,23 +78,12 @@ export async function signInAction(_prevState: SignInState, formData: FormData):
   return { error: "Email atau kata sandi salah." };
 }
 
-/** Signs out the current session instantly (clears demo cookies and redirects). */
+/** Signs out the current session and redirects. */
 export async function signOutAction(): Promise<void> {
-  const cookieStore = await cookies();
-  cookieStore.delete("mboyo_demo_role");
-  cookieStore.delete("mboyo_demo_email");
-
-  const isDemoMode =
-    process.env.DEMO_MODE === "true" ||
-    process.env.NEXT_PUBLIC_DEMO_MODE === "true" ||
-    process.env.NODE_ENV === "development";
-
-  if (!isDemoMode) {
-    try {
-      const supabase = await createServerSupabaseClient();
-      await supabase.auth.signOut();
-    } catch {}
-  }
+  try {
+    const supabase = await createServerSupabaseClient();
+    await supabase.auth.signOut();
+  } catch {}
 
   redirect("/masuk");
 }

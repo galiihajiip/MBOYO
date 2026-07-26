@@ -88,7 +88,7 @@ export default async function LoginPage({
 
         {/* Footer Attribution */}
         <div className="relative z-10 font-mono text-xs text-slate-400">
-          &copy; {new Date().getFullYear()} Tim MBOYO. Hak Cipta Dilindungi.
+          &copy; {new Date().getFullYear()} Tim VETERAN KUKUS. Hak Cipta Dilindungi.
         </div>
       </div>
 
