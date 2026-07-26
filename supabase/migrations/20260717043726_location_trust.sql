@@ -11,6 +11,12 @@
 -- confidence signal (not blind trust)... cross-check against event
 -- geofence as an additional signal, not an auto-accept/reject gate."
 
+-- See 20260716153709_core_schema.sql's identical comment: Cloud projects
+-- don't always default this migration role's session search_path to
+-- include `extensions`, so unqualified geometry/geography references below
+-- (st_x/st_y casts) fail without this.
+set search_path = public, extensions;
+
 create type public.location_source as enum ('gps', 'manual_pin', 'manual_address');
 
 alter table public.geolocation_observations
@@ -90,7 +96,7 @@ create function public.record_geolocation_observation(
 returns public.geolocation_observations
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_point geography(Point, 4326);

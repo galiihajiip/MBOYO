@@ -37,7 +37,7 @@ returns table (
 )
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 begin
   -- Same caller restriction as claim_analysis_jobs: service-role bypasses
@@ -97,7 +97,7 @@ create function public.mark_report_analysis_running(p_report_id uuid)
 returns public.reports
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_report public.reports;
@@ -152,7 +152,7 @@ create function public.record_analysis_result(
 returns public.model_predictions
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_prediction public.model_predictions;
@@ -234,7 +234,7 @@ create function public.fail_analysis_job(
 returns public.analysis_jobs
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_job public.analysis_jobs;
