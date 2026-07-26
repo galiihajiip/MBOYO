@@ -5,8 +5,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-import { priorityColors, severityColors, type PriorityLevel, type SeverityClass } from "@mboyo/ui";
+import { priorityColors, severityColors, severityLabels, reportStatusLabelsInternal, type PriorityLevel, type SeverityClass } from "@mboyo/ui";
 import { getClientEnv } from "../../lib/env.client";
+import { renderReportPinPopup } from "./reportPinPopup";
 
 export interface CrisisMapReportPin {
   reportId: string;
@@ -204,12 +205,47 @@ export function CrisisMap({
         map.on("click", UNCLUSTERED_LAYER_ID, (event) => {
           const feature = event.features?.[0];
           const reportId = feature?.properties?.reportId as string | undefined;
-          if (reportId) router.push(`/command/tugas/baru?reportId=${reportId}`);
+          const geometry = feature?.geometry;
+          if (!reportId || geometry?.type !== "Point") return;
+          const [lon, lat] = geometry.coordinates as [number, number];
+          const popupContent = renderReportPinPopup(reportId, `/command/tugas/baru?reportId=${reportId}`);
+          new maplibregl.Popup({ closeButton: true, maxWidth: "280px" })
+            .setLngLat([lon, lat])
+            .setDOMContent(popupContent)
+            .addTo(map);
         });
         map.on("mouseenter", UNCLUSTERED_LAYER_ID, () => {
           map.getCanvas().style.cursor = "pointer";
         });
         map.on("mouseleave", UNCLUSTERED_LAYER_ID, () => {
+          map.getCanvas().style.cursor = "";
+        });
+
+        // Supercluster circles (CLUSTER_CIRCLE_LAYER_ID) had no click handler
+        // at all, so every grouped pin was dead until zoomed in enough that
+        // MapLibre split it back into individual UNCLUSTERED_LAYER_ID points
+        // — the standard fix is to zoom into whatever a cluster click hits,
+        // using supercluster's own getClusterExpansionZoom so it lands
+        // exactly where the cluster fully splits, not an arbitrary step.
+        map.on("click", CLUSTER_CIRCLE_LAYER_ID, async (event) => {
+          const feature = event.features?.[0];
+          const clusterId = feature?.properties?.cluster_id as number | undefined;
+          const geometry = feature?.geometry;
+          if (clusterId === undefined || geometry?.type !== "Point") return;
+          const source = map.getSource<maplibregl.GeoJSONSource>(REPORTS_SOURCE_ID);
+          if (!source) return;
+          try {
+            const zoom = await source.getClusterExpansionZoom(clusterId);
+            map.easeTo({ center: geometry.coordinates as [number, number], zoom });
+          } catch {
+            // Expansion zoom lookup can fail transiently mid-tile-load; a
+            // dead click is a minor annoyance, never worth a hard crash.
+          }
+        });
+        map.on("mouseenter", CLUSTER_CIRCLE_LAYER_ID, () => {
+          map.getCanvas().style.cursor = "pointer";
+        });
+        map.on("mouseleave", CLUSTER_CIRCLE_LAYER_ID, () => {
           map.getCanvas().style.cursor = "";
         });
       }
