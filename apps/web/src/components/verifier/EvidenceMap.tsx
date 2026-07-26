@@ -2,11 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { severityColors, type SeverityClass } from "@mboyo/ui";
 import { getClientEnv } from "../../lib/env.client";
+import { renderReportPinPopup } from "../command/reportPinPopup";
 
 export interface EvidenceMapPin {
   reportId: string;
@@ -38,7 +38,6 @@ export function EvidenceMap({ pins }: EvidenceMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const markersRef = useRef<maplibregl.Marker[]>([]);
-  const router = useRouter();
   const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
@@ -91,11 +90,15 @@ export function EvidenceMap({ pins }: EvidenceMapProps) {
         .addTo(map);
       marker.getElement().style.cursor = "pointer";
       marker.getElement().addEventListener("click", () => {
-        router.push(`/verifier/laporan/${pin.reportId}`);
+        const popupContent = renderReportPinPopup(pin.reportId, `/verifier/laporan/${pin.reportId}`);
+        new maplibregl.Popup({ closeButton: true, maxWidth: "280px" })
+          .setLngLat([pin.longitude, pin.latitude])
+          .setDOMContent(popupContent)
+          .addTo(map);
       });
       markersRef.current.push(marker);
     }
-  }, [pins, router]);
+  }, [pins]);
 
   if (loadError) {
     return (

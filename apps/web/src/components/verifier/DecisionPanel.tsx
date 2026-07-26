@@ -8,6 +8,8 @@ import { Button, Select, Textarea, severityLabels, rejectReasonLabels, verificat
 
 export interface DecisionPanelProps {
   reportId: string;
+  /** Called after a decision is successfully saved, in addition to this panel's own router.refresh() — lets an embedding parent (e.g. QueueDetailPreview) react too, such as closing itself and refetching the queue list. */
+  onDecided?: () => void;
 }
 
 const SEVERITY_OPTIONS = (Object.keys(severityLabels) as SeverityClass[]).map((value) => ({
@@ -40,7 +42,7 @@ const DECISION_ORDER: VerificationDecision[] = [
  * requirements exactly, so a submission that passes this form's disabled-
  * button guard also passes that schema server-side.
  */
-export function DecisionPanel({ reportId }: DecisionPanelProps) {
+export function DecisionPanel({ reportId, onDecided }: DecisionPanelProps) {
   const router = useRouter();
   const [selected, setSelected] = useState<VerificationDecision | null>(null);
   const [overrideSeverity, setOverrideSeverity] = useState<SeverityClass | undefined>(undefined);
@@ -88,6 +90,7 @@ export function DecisionPanel({ reportId }: DecisionPanelProps) {
       }
       setSubmitted(true);
       router.refresh();
+      onDecided?.();
     } catch {
       setError("Gagal menghubungi server untuk menyimpan keputusan.");
     } finally {
