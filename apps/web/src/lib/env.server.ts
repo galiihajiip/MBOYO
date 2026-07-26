@@ -23,7 +23,6 @@ export function getServerEnv(): ServerEnv {
     CRON_SECRET: process.env.CRON_SECRET || "mboyo-cron-secret-local-dev",
     DEMO_MODE: process.env.DEMO_MODE || "true",
     NEXT_PUBLIC_DEMO_MODE: process.env.NEXT_PUBLIC_DEMO_MODE || "true",
-    ...process.env,
   });
   return cached;
 }
